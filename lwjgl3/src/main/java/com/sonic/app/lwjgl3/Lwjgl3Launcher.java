@@ -3,7 +3,7 @@ package com.sonic.app.lwjgl3; // Declara el paquete al que pertenece esta clase.
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application; // Importa la clase principal para iniciar una aplicación LibGDX en el escritorio.
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration; // Importa la clase para configurar la aplicación de escritorio (ventana, VSync, etc.).
-import com.sonic.app.Main; // Importa la clase 'Main' de tu proyecto, que contiene la lógica principal de la aplicación LibGDX.
+import com.sonic.app.main.Main; // Importa la clase 'Main' de tu proyecto, que contiene la lógica principal de la aplicación LibGDX.
 
 /**
  * Lanza la aplicación de escritorio (usando la biblioteca LWJGL3).
