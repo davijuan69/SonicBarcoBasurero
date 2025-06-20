@@ -11,9 +11,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sonic.app.screens.game.GameScreen;
 import com.sonic.app.utils.constants.ConsoleColor;
-import com.sonic.app.world.entities.Entity;
-import com.sonic.app.world.statics.FloorPoly;
-import com.sonic.app.world.statics.StaticFactory;
 
 import java.util.ArrayList;
 
@@ -76,10 +73,6 @@ public class TiledManager {
                 }
 
                 // Crea una nueva instancia de `FloorPoly` y la añade como un actor en el juego.
-                FloorPoly newFloorPoly = new FloorPoly(game.getWorld(),
-                    new Rectangle(x/tiledSize, y/tiledSize, 1, 1), // La posición del polígono se escala.
-                    verticesVector);
-                game.addActor(newFloorPoly);
             }
 
             // Intenta obtener el tipo de la propiedad "type" del objeto.
@@ -92,12 +85,10 @@ public class TiledManager {
 
             // Si el tipo no está definido (es null), se asume que es un tipo de "FLOOR" por defecto.
             if (type == null) {
-                game.addStatic(StaticFactory.Type.FLOOR, new Rectangle(X/tiledSize, Y/tiledSize, W/tiledSize, H/tiledSize));
                 continue; // Pasa al siguiente objeto.
             }
             try{
                 // Intenta crear y añadir una entidad estática usando el tipo obtenido del mapa.
-                game.addStatic(StaticFactory.Type.valueOf(type), new Rectangle(X/tiledSize, Y/tiledSize, W/tiledSize, H/tiledSize));
             }
             catch (IllegalArgumentException e) {
                 // Si el tipo de estático no es válido (no coincide con un enum `StaticFactory.Type`), imprime un error.
@@ -125,7 +116,6 @@ public class TiledManager {
 
             try{
                 // Intenta crear y añadir una entidad usando el tipo y la posición. Se pasa (0,0) para velocidad inicial.
-                game.addEntity(Entity.Type.valueOf(type), new Vector2(X, Y), new Vector2(0,0));
             }catch (IllegalArgumentException e) {
                 // Si el tipo de entidad no es válido, imprime un error.
                 System.out.println(ConsoleColor.GRAY + "Tipo de entidad " + type + " no encontrado" + ConsoleColor.RESET);
@@ -146,9 +136,8 @@ public class TiledManager {
             float Y = object.getProperties().get("y", Float.class )/ tiledSize;
 
             // Si el tipo de entidad es "MIRROR", añade su posición al `spawnMirror` del juego.
-            if (Entity.Type.valueOf(type) == Entity.Type.MIRROR) {
-                game.spawnMirror.add(new Vector2(X, Y));
-            }
+
+
         }
     }
 

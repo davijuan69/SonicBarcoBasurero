@@ -200,7 +200,6 @@ public class SoundManager implements Music.OnCompletionListener {
     public void setSoundTracks(Main.SoundTrackType type){
         if (type == currentSoundTrack) return; // Si ya es el tipo actual, no hace nada.
         currentSoundTrack = type; // Actualiza el tipo de pista de sonido actual.
-        playSoundTrack(); // Reproduce una canción aleatoria de la nueva categoría.
     }
 
     /**

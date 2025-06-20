@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.sonic.app.utils.animation.SheetCutter;
 import com.sonic.app.utils.animation.SheetCutter;
-import com.sonic.app.world.entities.player.powers.PowerUp;
 
 /**
  * La clase `PowerView` es un componente visual de la interfaz de usuario que extiende `SpriteAsActor`.
@@ -47,15 +46,4 @@ public class PowerView extends SpriteAsActor { //HOLAAA Hay que adaptar esto par
      *
      * @param type El tipo de `PowerUp` del que se desea mostrar el ícono.
      */
-    public void setPower(PowerUp.Type type){
-        // Utiliza una declaración `switch` para seleccionar el TextureRegion adecuado según el tipo de poder.
-        // `type.ordinal()` devuelve la posición de la constante de enumeración (ej. NORMAL.ordinal() es 0, BOMB.ordinal() es 1, etc.).
-        switch (type){
-            case NONE -> setTextureRegion(icons[PowerType.NORMAL.ordinal()]); // Si no hay poder, muestra el ícono normal.
-            case BOMB ->  setTextureRegion(icons[PowerType.BOMB.ordinal()]);   // Si es una bomba, muestra el ícono de bomba.
-            case SLEEP -> setTextureRegion(icons[PowerType.SLEEP.ordinal()]); // Si es dormir, muestra el ícono de dormir.
-            case SWORD -> setTextureRegion(icons[PowerType.SWORD.ordinal()]); // Si es espada, muestra el ícono de espada.
-            case WHEEL -> setTextureRegion(icons[PowerType.WHEEL.ordinal()]); // Si es rueda, muestra el ícono de rueda.
-        }
-    }
 }

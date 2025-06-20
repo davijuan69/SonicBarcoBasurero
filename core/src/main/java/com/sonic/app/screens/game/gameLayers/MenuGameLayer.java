@@ -28,7 +28,7 @@ public class MenuGameLayer extends GameLayer {
         // Crea un botón con texto e imagen (ImageTextButton).
         // El texto del botón cambia según si el juego es un cliente ("Desconectarse") o no ("Volver al Menu").
         // Se usa un estilo predefinido (manager.game.myImageTextbuttonStyle).
-        ImageTextButton exitButton = new ImageTextButton(manager.game.main.isClient() ? "Desconectarse": "Volver al Menu", manager.game.myImageTextbuttonStyle);
+        ImageTextButton exitButton = new ImageTextButton("Volver al Menu", manager.game.myImageTextbuttonStyle);
 
         // Agrega un ClickListener al botón de salida.
         // Cuando se hace clic en el botón, se llama al método endGame() del juego para finalizar la partida.
