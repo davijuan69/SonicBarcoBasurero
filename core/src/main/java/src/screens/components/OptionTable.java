@@ -1,4 +1,4 @@
-package src.screens.components; // Declara el paquete donde se encuentra esta clase.
+package src.screens.components;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align; // <-- ¡Importante! Asegúrate de tener esta importación
 import src.utils.constants.MyColors;
 import src.utils.sound.SingleSoundManager;
 import src.utils.sound.SoundManager;
@@ -17,9 +18,14 @@ import src.utils.sound.SoundManager;
  * Utiliza Sliders para permitir al usuario ajustar estos volúmenes.
  */
 public class OptionTable {
-    private final Slider volumeSlider; // Declara un Slider para controlar el volumen general.
-    private final Slider volumenMusicSlider; // Declara un Slider para controlar el volumen de la música.
-    private final Slider volumenSoundSlider; // Declara un Slider para controlar el volumen de los efectos de sonido.
+    private final Slider volumeSlider;
+    private final Slider volumenMusicSlider;
+    private final Slider volumenSoundSlider;
+
+    // Referencia a la tabla donde se añadirán los componentes.
+    // Aunque ya la pasas en el constructor, es bueno tener una referencia aquí
+    // si OptionTable no extiende Table.
+    private final Table parentTable;
 
     /**
      * Constructor para la clase `OptionTable`.
@@ -31,87 +37,66 @@ public class OptionTable {
      * @param font La BitmapFont que se utilizará para el texto de las etiquetas.
      */
     public OptionTable(Skin skin, Table table, BitmapFont font) {
-        // Obtiene la instancia única del SoundManager (siguiendo el patrón Singleton).
+        this.parentTable = table; // Guardamos la referencia a la tabla
         SoundManager soundManager = SingleSoundManager.getInstance();
 
         // --- Componentes para el volumen general ---
-        // Crea una etiqueta de título para la sección de volumen.
-        Label volumeTitleLabel = new Label("VOLUMEN",  new Label.LabelStyle(font, MyColors.BLUE));
-        // Crea una etiqueta para el slider de volumen general.
         Label volumeLabel = new Label("General", new Label.LabelStyle(font, MyColors.BLUE));
-
-        // Crea el Slider para el volumen general.
-        // Rango de 0 a 1, con pasos de 0.01, no es vertical, usa el skin proporcionado.
         volumeSlider = new Slider(0, 1, 0.01f, false, skin);
-        // Establece el valor inicial del slider al volumen actual del SoundManager.
         volumeSlider.setValue(soundManager.getVolume());
-        // Añade un listener al slider para detectar cuando su valor cambia.
         volumeSlider.addListener(new ChangeListener() {
-            @Override // Indica que este método sobrescribe un método de la clase padre.
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Cuando el slider cambia, actualiza el volumen general en el SoundManager.
                 soundManager.setVolume(volumeSlider.getValue());
             }
         });
 
         // --- Componentes para el volumen de la música ---
-        // Crea una etiqueta para el slider de volumen de música.
-        Label volumeMusicLabel = new Label("Musica", new Label.LabelStyle(font, MyColors.BLUE));
-
-        // Crea el Slider para el volumen de la música.
+        Label volumeMusicLabel = new Label("Musica", new Label.LabelStyle(font, MyColors.YELLOW));
         volumenMusicSlider = new Slider(0, 1, 0.01f, false, skin);
-        // Establece el valor inicial del slider al volumen actual de la música del SoundManager.
         volumenMusicSlider.setValue(soundManager.getVolumeMusic());
-        // Añade un listener al slider para detectar cuando su valor cambia.
         volumenMusicSlider.addListener(new ChangeListener() {
-            @Override // Indica que este método sobrescribe un método de la clase padre.
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Cuando el slider cambia, actualiza el volumen de la música en el SoundManager.
                 soundManager.setVolumeMusic(volumenMusicSlider.getValue());
             }
         });
 
         // --- Componentes para el volumen de los efectos de sonido ---
-        // Crea una etiqueta para el slider de volumen de los efectos de sonido.
-        Label volumeSoundLabel = new Label("Sonidos", new Label.LabelStyle(font, MyColors.BLUE));
-
-        // Crea el Slider para el volumen de los efectos de sonido.
+        Label volumeSoundLabel = new Label("Sonidos", new Label.LabelStyle(font, MyColors.RED));
         volumenSoundSlider = new Slider(0, 1, 0.01f, false, skin);
-        // Establece el valor inicial del slider al volumen actual de los efectos de sonido del SoundManager.
         volumenSoundSlider.setValue(soundManager.getVolumeSound());
-        // Añade un listener al slider para detectar cuando su valor cambia.
         volumenSoundSlider.addListener(new ChangeListener() {
-            @Override // Indica que este método sobrescribe un método de la clase padre.
+            @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Cuando el slider cambia, actualiza el volumen de los efectos de sonido en el SoundManager.
                 soundManager.setVolumeSound(volumenSoundSlider.getValue());
             }
         });
 
-        // --- Añadir los componentes a la tabla ---
+        // --- Añadir los componentes a la tabla con NUEVAS POSICIONES Y ESTILOS ---
+
         // Ajusta la escala de la fuente del título del volumen.
-        volumeTitleLabel.setFontScale(1.2f);
-        // Añade el título a la tabla, expandiéndolo horizontalmente y añadiendo un padding.
-        table.add(volumeTitleLabel).expandX().pad(10);
-        table.row(); // Pasa a la siguiente fila de la tabla.
+        // Título "VOLUMEN": Centrado, con padding superior e inferior
+        parentTable.add().expandX().padTop(50).padBottom(30).center();
+        parentTable.row(); // Siguiente elemento en una nueva fila
 
-        // Añade la etiqueta y el slider de volumen general a la tabla.
-        table.add(volumeLabel).expandX().pad(10);
-        table.row();
-        table.add(volumeSlider).expandX().pad(10);
-        table.row();
+        // Etiqueta "General" y Slider: Alineados a la izquierda, con un ancho fijo para el slider
+        parentTable.add(volumeLabel).align(Align.left).padLeft(50).padBottom(5); // Alineado a la izquierda, con padding a la izquierda y abajo
+        parentTable.row();
+        parentTable.add(volumeSlider).width(400).padBottom(40).center(); // Ancho fijo, centrado, más padding abajo
+        parentTable.row();
 
-        // Añade la etiqueta y el slider de volumen de música a la tabla.
-        table.add(volumeMusicLabel).expandX().pad(10);
-        table.row();
-        table.add(volumenMusicSlider).expandX().pad(10);
-        table.row();
+        // Etiqueta "Musica" y Slider: Similar al anterior, con ajustes de padding
+        parentTable.add(volumeMusicLabel).align(Align.left).padLeft(50).padBottom(5);
+        parentTable.row();
+        parentTable.add(volumenMusicSlider).width(400).padBottom(40).center();
+        parentTable.row();
 
-        // Añade la etiqueta y el slider de volumen de los efectos de sonido a la tabla.
-        table.add(volumeSoundLabel).expandX().pad(10);
-        table.row();
-        table.add(volumenSoundSlider).expandX().pad(10);
-        table.row();
+        // Etiqueta "Sonidos" y Slider: Similar al anterior, con ajustes de padding
+        parentTable.add(volumeSoundLabel).align(Align.left).padLeft(50).padBottom(5);
+        parentTable.row();
+        parentTable.add(volumenSoundSlider).width(400).padBottom(40).center(); // Último slider con más padding inferior
+        parentTable.row(); // Siempre termina con un row() si esperas más contenido debajo o simplemente para cerrar la tabla.
     }
 
     /**
@@ -121,9 +106,10 @@ public class OptionTable {
      * y la interfaz de usuario necesita sincronizarse.
      */
     public void update(){
-        SoundManager soundManager = SingleSoundManager.getInstance(); // Obtiene la instancia actual del SoundManager.
-        volumeSlider.setValue(soundManager.getVolume()); // Actualiza el slider de volumen general.
-        volumenMusicSlider.setValue(soundManager.getVolumeMusic()); // Actualiza el slider de volumen de música.
-        volumenSoundSlider.setValue(soundManager.getVolumeSound()); // Actualiza el slider de volumen de efectos de sonido.
+        SoundManager soundManager = SingleSoundManager.getInstance();
+        volumeSlider.setValue(soundManager.getVolume());
+        volumenMusicSlider.setValue(soundManager.getVolumeMusic());
+        volumenSoundSlider.setValue(soundManager.getVolumeSound());
     }
 }
+

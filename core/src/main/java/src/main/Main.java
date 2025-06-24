@@ -87,6 +87,10 @@ public class Main extends Game {
         assetManager = new AssetManager();
 
         // Carga de texturas y sonidos necesarios para el menú y UIScreen base
+        assetManager.load("ui/bg/sonic-frontiers.jpg" , Texture.class);
+        assetManager.load("ui/bg/image3.jpg", Texture.class);
+        assetManager.load("ui/bg/image2.jpg", Texture.class);
+        assetManager.load("ui/bg/images.jpg", Texture.class);
         assetManager.load("ui/bg/img.png", Texture.class); // Fondo del menú
         assetManager.load("logo.png", Texture.class);         // Logo del juego
         assetManager.load("ui/buttons/info.png", Texture.class);
@@ -113,7 +117,6 @@ public class Main extends Game {
         soundManager.addSoundTrack(SoundTrackType.MENU);
         soundManager.addSoundTrack(SoundTrackType.GAME);
         // Aquí podrías cargar y añadir tus archivos de música
-        // soundManager.addMusicToSoundTrack(assetManager.get("music/meow.mp3", Music.class), SoundTrackType.MENU);
     }
 
     /**
@@ -123,9 +126,9 @@ public class Main extends Game {
     private void initScreens(){
         screensList  = new ArrayList<>();
         // Asegúrate de que las pantallas se añaden en el mismo orden que en el enum Screens.
-        // Si no tienes IntroScreen, puedes eliminarla del enum y ajustar los índices.
         screensList.add(new MenuScreen(this));
-        // Necesitas crear esta clase si la usas
+        screensList.add(new OptionScreen(this));
+
     }
 
     /**

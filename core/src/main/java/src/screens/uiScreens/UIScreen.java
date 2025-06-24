@@ -125,7 +125,7 @@ public abstract class UIScreen extends BaseScreen {
     @Override
     public void render(float delta) {
         // Limpia la pantalla con un color blanco sólido.
-        Gdx.gl.glClearColor(0f,1f,0f, 1f);
+        Gdx.gl.glClearColor(1f,1f,1f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Actualiza la lógica de los actores en el Stage (ej. animaciones, movimientos).
