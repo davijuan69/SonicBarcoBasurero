@@ -1,7 +1,8 @@
 package src.world.entities.player.states;
 
 import src.world.entities.player.Player;
-import src.utils.StateMachine.State;
+import src.utils.stateMachine.State;
+import src.world.entities.player.PlayerCommon;
 
 public abstract class StatePlayer implements State {
     protected Player player;
@@ -9,6 +10,4 @@ public abstract class StatePlayer implements State {
     public StatePlayer (Player player){
         this.player = player;
     }
-
-    public abstract void update(float delta);
 }

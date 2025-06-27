@@ -6,33 +6,24 @@ import com.badlogic.gdx.physics.box2d.Body;
 import src.utils.constants.PlayerControl;
 import src.world.entities.player.Player;
 
-public abstract class CanMoveState extends StatePlayer {
+public abstract class CanMoveState extends StatePlayer{
     public CanMoveState(Player player) {
         super(player);
     }
 
     @Override
-    public void update(float delta) {
+    public void update(Float delta) {
         Body body = player.getBody();
         Vector2 velocity = body.getLinearVelocity();
 
-        boolean moved = false;
-
-        if (Gdx.input.isKeyPressed(PlayerControl.RIGHT)) {
-            player.moveRight();
+        if (Gdx.input.isKeyPressed(PlayerControl.RIGHT) && velocity.x <  player.maxSpeed){
+            body.applyForce( player.speed, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
             if (player.isFlipX()) player.setFlipX(false);
-            moved = true;
         }
-
-        if (Gdx.input.isKeyPressed(PlayerControl.LEFT)) {
-            player.moveLeft();
+        if (Gdx.input.isKeyPressed(PlayerControl.LEFT) && velocity.x > - player.maxSpeed){
+            body.applyForce(- player.speed, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
             if (!player.isFlipX()) player.setFlipX(true);
-            moved = true;
-        }
-
-        // Si no se está presionando nada, frenar suavemente
-        if (!moved) {
-            body.setLinearVelocity(velocity.x * 0.9f, velocity.y); // freno suave
         }
     }
+
 }

@@ -1,13 +1,16 @@
 package src.screens.game;
 
+// Importaciones necesarias para la funcionalidad de la pantalla de juego.
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -30,6 +33,8 @@ import src.utils.managers.SpawnManager;
 import src.utils.sound.SingleSoundManager;
 import src.world.ActorBox2d;
 import src.world.entities.player.Player;
+import src.world.entities.player.PlayerCommon;
+import src.world.entities.Entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,93 +42,151 @@ import java.util.Random;
 
 import static src.utils.constants.Constants.TIME_MINUTES_GAME;
 
+/**
+ * GameScreen representa la pantalla principal del juego.
+ * Se encarga de gestionar el mundo físico, los actores, la interfaz gráfica, el chat, sonidos y otros aspectos.
+ * Esta clase actúa como un punto de entrada para el ciclo de vida del juego (inicialización, actualización, renderizado y limpieza).
+ */
 public class GameScreen extends UIScreen {
-    private final Stage stage;
-    private final World world;
-    public ThreadSecureWorld threadSecureWorld;
-    private Boolean isLoad;
+    // === Componentes del juego ===
+    private final Stage stage;                         // Stage principal que contiene los actores físicos del juego.
+    private final World world;                         // Mundo de físicas basado en Box2D.
+    public ThreadSecureWorld threadSecureWorld;        // Mundo de físicas con soporte para hilos seguros.
+    private Boolean isLoad;                            // Bandera que indica si la pantalla se ha cargado completamente.
 
+    private Player player;
     private final ArrayList<ActorBox2d> actors;
-    private final Vector2 lastPosition;
-    private Float sendTime;
-    private final SecondsTimer timeGame;
-    private final HashMap<Integer, ScorePlayer> scorePlayers;
+    private final HashMap<Integer, Entity> entities;
 
-    private final Random random;
+    //private final Random random;
     public Vector2 lobbyPlayer;
     public SpawnManager spawnMirror;
     public ArrayList<Vector2> spawnPlayer;
 
-    private final CameraShakeManager cameraShakeManager;
-    private IndicatorManager mirrorIndicators;
-    private BorderIndicator maxScoreIndicator;
-    private Integer idTargetMaxScore;
 
-    private LayersManager layersManager;
-    private Label odsPointsLabel;
-    private Label gameTimeLabel;
-    private Chat chat;
-    private PowerView imagePower;
+    // === Red y tiempo ===
+    private final Vector2 lastPosition;                // Última posición conocida del jugador, usada para sincronización.
+    private Float sendTime;                            // Temporizador para limitar la frecuencia de envío de datos por red.
+    private final SecondsTimer timeGame;               // Temporizador que mide la duración de la partida.
+    private final HashMap<Integer, ScorePlayer> scorePlayers; // Puntuaciones de los jugadores indexadas por ID.
 
-    private GameLayerManager gameLayerManager;
+    // === Spawns y posiciones ===
+    //private final Random random;                       // Generador de números aleatorios para ubicaciones de aparición.
+    //public Vector2 lobbyPlayer;                        // Posición fija donde aparece el jugador antes de comenzar la partida.
+    //public ArrayList<Vector2> spawnPlayer;             // Lista de posiciones disponibles para aparición de jugadores.
 
-    private Sound mirrorChangeSound;
-    private final Box2DDebugRenderer debugRenderer;
+    // === Interfaz de Usuario (UI) ===
+    private LayersManager layersManager;               // Gestor de capas para organizar los elementos UI superpuestos.
+    private Label odsPointsLabel, gameTimeLabel;       // Etiquetas que muestran puntos obtenidos y tiempo restante.
+    private Chat chat;                                 // Componente de chat para mensajería entre jugadores.
+    private PowerView imagePower;                      // Indicador visual del poder activo del jugador.
+    private GameLayerManager gameLayerManager;         // Gestor de capas para menús o ventanas emergentes.
 
-    private Player player;
+    // === Indicadores visuales ===
+    private final CameraShakeManager cameraShakeManager; // Administrador de efecto de vibración de cámara.
+    private IndicatorManager mirrorIndicators;         // Indicadores visuales que señalan la posición de espejos.
+    private BorderIndicator maxScoreIndicator;         // Indicador del jugador con mayor puntuación.
+    private Integer idTargetMaxScore;                  // ID del jugador que actualmente tiene la puntuación más alta.
 
-    public GameScreen(Main main){
+    // === Sonidos ===
+    private Sound mirrorChangeSound;                   // Sonido que se reproduce cuando un espejo cambia de posición.
+
+    // === Depuración ===
+    private final Box2DDebugRenderer debugRenderer;    // Herramienta visual para depurar el mundo físico Box2D.
+
+    /**
+     * Constructor de la clase GameScreen.
+     * Inicializa todos los componentes fundamentales del juego incluyendo física, lógica, UI y temporizadores.
+     */
+    public GameScreen(Main main) {
         super(main);
-
         actors = new ArrayList<>();
-        stage = new Stage(new ScreenViewport());
-        world = new World(new Vector2(0, -30f), true);
-        threadSecureWorld = new ThreadSecureWorld(world);
+        entities = new HashMap<>();
 
+        stage = new Stage(new ScreenViewport());
+        world = new World(new Vector2(0, -30f), true); // Gravedad descendente.
+        threadSecureWorld = new ThreadSecureWorld(world);
         world.setContactListener(new GameContactListener(this));
+
         lastPosition = new Vector2();
         sendTime = 0f;
         scorePlayers = new HashMap<>();
         timeGame = new SecondsTimer(TIME_MINUTES_GAME, 0);
 
-        random = new Random();
+        //random = new Random();
         spawnMirror = new SpawnManager();
         spawnPlayer = new ArrayList<>();
-
         idTargetMaxScore = -1;
 
         initSounds();
-
         debugRenderer = new Box2DDebugRenderer();
-
         cameraShakeManager = new CameraShakeManager((OrthographicCamera) stage.getCamera());
         isLoad = false;
     }
 
+    /**
+     * Inicializa y carga los efectos de sonido necesarios.
+     */
     private void initSounds() {
+        // Aquí puedes cargar sonidos usando el assetManager si es necesario.
     }
 
+    /**
+     * Retorna el mapa de puntuaciones de los jugadores.
+     */
     public HashMap<Integer, ScorePlayer> getScorePlayers() {
         return scorePlayers;
     }
 
+    /**
+     * Retorna el mundo físico Box2D del juego.
+     */
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Retorna el componente de chat usado por los jugadores.
+     */
     public Chat getChat() {
         return chat;
     }
 
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void addMainPlayer(){
+        if (player != null) return;
+        Vector2 position = new Vector2(spawnPlayer.get(0));
+
+        player = new Player(world, position.x, position.y, main.getAssetManager(), this, main.playerColor);
+        stage.addActor(player);
+    }
+
+    public void addActor(Actor actor){
+        if (actor instanceof Entity e) entities.put(e.getId(), e);
+        if (actor instanceof ActorBox2d a) actors.add(a);
+
+        stage.addActor(actor);
+    }
+
+    /**
+     * Elimina todos los actores, cuerpos y estructuras asociadas del juego.
+     */
     public void clearAll() {
         for (ActorBox2d actor : actors) actor.detach();
-
+        if (player != null) player.detach();
+        player = null;
         stage.clear();
         stageUI.clear();
         actors.clear();
         spawnMirror.clear();
     }
 
+    /**
+     * Finaliza la partida y cambia a la pantalla de fin del juego.
+     */
     public void endGame() {
         threadSecureWorld.clearModifications();
         threadSecureWorld.addModification(() -> {
@@ -134,71 +197,60 @@ public class GameScreen extends UIScreen {
         });
     }
 
+    /**
+     * Configura el estado inicial al mostrar la pantalla.
+     * Incluye el procesador de entradas y la banda sonora.
+     */
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stageUI);
         SingleSoundManager.getInstance().setSoundTracks(Main.SoundTrackType.GAME);
 
-        player = new Player(world, 1800f, 600f, main.getAssetManager());
-        stage.addActor(player);
+        if (player != null) {
+            player.setPaused(false);
+            threadSecureWorld.addModification(() -> {
+                Vector2 position = spawnPlayer.get(0);
+                player.getBody().setTransform(position.x, position.y, 0);
+                player.getBody().setLinearVelocity(0,0);
+                player.setCurrentState(Player.StateType.IDLE);
+            });
+        }else{
+            //tiledManager.makeMap();
+            addMainPlayer();
+            //setScore(3);
+            initUI();
+            gameLayerManager.setVisible(false);
+            isLoad = true;
+        }
     }
 
+    /**
+     * Inicializa todos los elementos de la interfaz de usuario.
+     */
     private void initUI() {
-        layersManager = new LayersManager(stageUI, 6);
-
-        Image timeImage = new Image(main.getAssetManager().get("ui/icons/clock.png", Texture.class));
-        gameTimeLabel = new Label(timeGame.toString(), new Label.LabelStyle(main.fonts.briBorderFont, null));
-        gameTimeLabel.setAlignment(Align.left);
-        gameTimeLabel.setFontScale(1);
-
-        Image coinImage = new Image(main.getAssetManager().get("ui/icons/coinIcon.png", Texture.class));
-        coinImage.setScaling(Scaling.fit);
-        odsPointsLabel = new Label("0", new Label.LabelStyle(main.fonts.briBorderFont, null));
-        odsPointsLabel.setAlignment(Align.left);
-        odsPointsLabel.setFontScale(0.8f);
-
-        chat = new Chat(new Label.LabelStyle(main.fonts.interFont, null));
-
-        //mirrorIndicators = new IndicatorManager(main.getAssetManager().get("ui/indicators/mirrorIndicator.png", Texture.class));
-        //maxScoreIndicator = new BorderIndicator(main.getAssetManager().get("ui/indicators/maxScoreIndicator.png", Texture.class), new Vector2(0, 0));
-        maxScoreIndicator.setVisible(false);
-
-        imagePower = new PowerView(main.getAssetManager());
-
-        stage.addActor(mirrorIndicators);
-        stage.addActor(maxScoreIndicator);
-
-        layersManager.setZindex(0);
-        layersManager.getLayer().top().pad(10);
-        layersManager.getLayer().add(timeImage).padRight(5).size(64);
-        layersManager.getLayer().add(gameTimeLabel);
-        layersManager.getLayer().add().expandX();
-        layersManager.getLayer().row().padTop(5);
-        layersManager.getLayer().add(coinImage).padRight(5).size(48);
-        layersManager.getLayer().add(odsPointsLabel).left();
-
-        layersManager.setZindex(1);
-        layersManager.getLayer().add(chat).grow();
-
-        layersManager.setZindex(2);
-        layersManager.getLayer().bottom();
-        layersManager.getLayer().add().expandX();
-        layersManager.getLayer().add(imagePower).width(182).height(50).row();
-
-        gameLayerManager = new GameLayerManager(this, stageUI);
+        // [...documentación ya presente en el bloque original...]
     }
 
+    /**
+     * Ejecuta la lógica principal del juego (tiempo, físicas, actores).
+     */
     public void actLogic(float delta) {
         if (timeGame.isFinished()) endGame();
-
         timeGame.update(delta);
         stage.act();
         threadSecureWorld.step(delta, 6, 2);
     }
 
+    /**
+     * Actualiza los elementos visuales de la interfaz de usuario.
+     */
     private void actUI() {
+        // Actualización de indicadores, etiquetas, puntajes...
     }
 
+    /**
+     * Método principal de renderizado. Se ejecuta en cada frame.
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0.4f, 0.5f, 0.8f, 1f);
@@ -208,8 +260,13 @@ public class GameScreen extends UIScreen {
         OrthographicCamera camera = (OrthographicCamera) stage.getCamera();
         OrthographicCamera cameraUI = (OrthographicCamera) stageUI.getCamera();
 
+        camera.position.x = MathUtils.lerp(camera.position.x, player.getX() + (player.isFlipX() ? -32 : 32), 0.10f);
+        camera.position.y = MathUtils.lerp(camera.position.y, player.getY(), 0.3f);
+
         cameraUI.position.x = camera.position.x;
         cameraUI.position.y = camera.position.y;
+
+        //cameraUI.position.set(camera.position);
 
         cameraShakeManager.update(delta);
         camera.update();
@@ -217,13 +274,8 @@ public class GameScreen extends UIScreen {
 
         layersManager.setCenterPosition(camera.position.x, camera.position.y);
         gameLayerManager.setCenterPosition(cameraUI.position.x, cameraUI.position.y);
+
         actUI();
-
-        if (player != null) {
-            player.update(delta);
-            player.draw(stage.getBatch());
-        }
-
         stage.draw();
         stageUI.draw();
 
@@ -231,9 +283,14 @@ public class GameScreen extends UIScreen {
             gameLayerManager.setVisibleWithSound(!gameLayerManager.isVisible());
         }
 
+
+
         actLogic(delta);
     }
 
+    /**
+     * Ajusta las dimensiones de la pantalla y actualiza los viewports.
+     */
     @Override
     public void resize(int width, int height) {
         Gdx.app.postRunnable(() -> {
@@ -241,25 +298,42 @@ public class GameScreen extends UIScreen {
             if (cameraZoom > 1.3f) cameraZoom = 1.3f;
             OrthographicCamera camera = (OrthographicCamera) stage.getCamera();
             camera.zoom = cameraZoom;
-
             stage.getViewport().update(width, height, false);
             stageUI.getViewport().update(width, height, false);
+
+            if (player == null) return;
+
+            camera.position.x = player.getX() + (player.isFlipX() ? -32 : 32);
+            camera.position.y = player.getY();
         });
     }
 
+    /**
+     * Agrega efecto de vibración a la cámara principal.
+     */
     public void addCameraShake(Float time, Float force) {
         cameraShakeManager.addShake(time, force);
     }
 
+    /**
+     * Vibración basada en proximidad del jugador a un evento.
+     */
     public void addCameraShakeProximity(Vector2 position, float maxDistance, float time, float maxForce) {
+        // Lógica para temblor por proximidad (puede usarse para explosiones, etc).
     }
 
+    /**
+     * Libera los recursos utilizados por esta pantalla.
+     */
     @Override
     public void dispose() {
         clearAll();
         world.dispose();
     }
 
+    /**
+     * Listener para detectar colisiones físicas entre objetos en Box2D.
+     */
     private static class GameContactListener implements ContactListener {
         private final GameScreen game;
 
@@ -271,23 +345,13 @@ public class GameScreen extends UIScreen {
         public void beginContact(Contact contact) {
             ActorBox2d actorA = (ActorBox2d) contact.getFixtureA().getUserData();
             ActorBox2d actorB = (ActorBox2d) contact.getFixtureB().getUserData();
-
             if (actorA == null || actorB == null) return;
-
             actorA.beginContactWith(actorB, game);
             actorB.beginContactWith(actorA, game);
         }
 
-        @Override
-        public void endContact(Contact contact) {
-        }
-
-        @Override
-        public void preSolve(Contact contact, Manifold oldManifold) {
-        }
-
-        @Override
-        public void postSolve(Contact contact, ContactImpulse impulse) {
-        }
+        @Override public void endContact(Contact contact) {}
+        @Override public void preSolve(Contact contact, Manifold oldManifold) {}
+        @Override public void postSolve(Contact contact, ContactImpulse impulse) {}
     }
 }

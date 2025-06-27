@@ -8,20 +8,13 @@ import src.world.ActorBox2dSprite;
 public class Entity extends ActorBox2dSprite{
 
     public enum Type {
-        RING,
-        ENEMY_MOTOBUG,
-        SPRING,
-        PLATFORM,
+        BASIC, //enemigo basico
+        RING, // moneda del juego
         CHECKPOINT,
-        SPIKE,
-        MONITOR_RING,
-        MONITOR_SPEED,
-        MONITOR_INVINCIBILITY,
-        GOALPOST,
-    }
 
-    protected Type type;
-    private final Integer id;
+    }
+    protected Type type;  // Tipo de la entidad (de la enumeración anterior)
+    private final Integer id; // Identificador único de la entidad
 
     public Entity(World world, Rectangle shape, AssetManager assetManager, Integer id, Type type){
         super(world, shape, assetManager);
