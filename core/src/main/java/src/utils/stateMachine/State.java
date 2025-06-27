@@ -1,4 +1,4 @@
-package src.utils.StateMachine;
+package src.utils.stateMachine;
 
 /**
  * La interfaz `State` define el contrato para cualquier estado dentro de una máquina de estados.

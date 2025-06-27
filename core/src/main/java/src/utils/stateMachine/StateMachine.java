@@ -1,4 +1,4 @@
-package src.utils.StateMachine;
+package src.utils.stateMachine;
 
 /**
  * La clase `StateMachine` implementa el patrón de diseño de Máquina de Estados.

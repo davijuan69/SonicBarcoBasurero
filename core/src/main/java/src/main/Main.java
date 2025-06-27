@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import src.screens.game.GameScreen;
 import src.screens.uiScreens.*;
 import src.screens.uiScreens.MenuScreen;
 import src.utils.Fonts;
@@ -35,7 +36,7 @@ public class Main extends Game {
     public enum Screens {
         MENU,           // Ahora es el Índice 0
         OPTION,         // Índice 1
-        INFO,           // Índice 2
+        //INFO,           // Índice 2
         GAME,           // Índice 3
         ENDGAME,        // Índice 4
     }
@@ -102,6 +103,7 @@ public class Main extends Game {
         assetManager.load("ui/buttons/input.png", Texture.class);
         assetManager.load("ui/bg/img.png", Texture.class);
         assetManager.load("ui/uiskin.json", Skin.class);
+        assetManager.load("yoshi.jpg", Texture.class);
 
 
         System.out.println("Cargando activos...");
@@ -128,6 +130,7 @@ public class Main extends Game {
         // Asegúrate de que las pantallas se añaden en el mismo orden que en el enum Screens.
         screensList.add(new MenuScreen(this));
         screensList.add(new OptionScreen(this));
+        screensList.add(new GameScreen(this));
 
     }
 
