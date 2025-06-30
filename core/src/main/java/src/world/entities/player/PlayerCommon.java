@@ -127,11 +127,11 @@ public abstract class PlayerCommon extends Entity {
 
     private void initAnimations(AssetManager assetManager){
         walkAnimation = new Animation<>(0.11f,
-            SheetCutter.cutHorizontal(assetManager.get("assets/yoshi.jpg"), 10));
+            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 10));
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         idleAnimation = new Animation<>(0.1f,
-            SheetCutter.cutHorizontal(assetManager.get("assets/yoshi.jpg"), 31));
+            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 31));
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
 //        downAnimation = new Animation<>(0.1f,

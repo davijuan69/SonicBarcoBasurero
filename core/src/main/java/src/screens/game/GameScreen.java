@@ -186,7 +186,7 @@ public class GameScreen extends UIScreen {
         threadSecureWorld.addModification(() -> {
             clearAll();
             timeGame.resetTimer();
-            main.changeScreen(Main.Screens.ENDGAME);
+            //main.changeScreen(Main.Screens.ENDGAME);
             isLoad = false;
         });
     }
@@ -213,7 +213,7 @@ public class GameScreen extends UIScreen {
             addMainPlayer();
             //setScore(3);
             initUI();
-            gameLayerManager.setVisible(false);
+            //gameLayerManager.setVisible(false);
             isLoad = true;
         }
     }
@@ -266,8 +266,8 @@ public class GameScreen extends UIScreen {
         camera.update();
         cameraUI.update();
 
-        layersManager.setCenterPosition(camera.position.x, camera.position.y);
-        gameLayerManager.setCenterPosition(cameraUI.position.x, cameraUI.position.y);
+        //layersManager.setCenterPosition(camera.position.x, camera.position.y);
+        //gameLayerManager.setCenterPosition(cameraUI.position.x, cameraUI.position.y);
 
         actUI();
         stage.draw();

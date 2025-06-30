@@ -36,9 +36,9 @@ public class Main extends Game {
     public enum Screens {
         MENU,           // Ahora es el Índice 0
         OPTION,         // Índice 1
-        //INFO,           // Índice 2
-        GAME,           // Índice 3
-        ENDGAME,        // Índice 4
+        GAME,           // Índice 2
+        //INFO,           // Índice 3
+        //ENDGAME,        // Índice 4
     }
 
     public Color playerColor;

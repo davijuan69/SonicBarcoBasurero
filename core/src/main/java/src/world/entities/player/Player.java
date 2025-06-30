@@ -226,7 +226,7 @@ public class Player extends PlayerCommon {
             invencible = false;
         }
 
-        coinSound.update(delta);
+        //coinSound.update(delta);
 
         Vector2 velocity = body.getLinearVelocity();
         if (getCurrentStateType() == StateType.DASH || getCurrentStateType() == StateType.STUN) return;
