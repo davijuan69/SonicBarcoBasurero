@@ -1,5 +1,7 @@
 package src.utils.stateMachine;
 
+
+
 /**
  * La clase `StateMachine` implementa el patrón de diseño de Máquina de Estados.
  * Permite a un objeto cambiar su comportamiento interno basándose en un estado actual,
@@ -7,7 +9,10 @@ package src.utils.stateMachine;
  * o modos de operación.
  */
 public class StateMachine {
-    private State currentState; // El estado actual en el que se encuentra la máquina de estados.
+    private State currentState;
+    // El estado actual en el que se encuentra la máquina de estados.
+
+
 
     /**
      * Constructor para la `StateMachine`.

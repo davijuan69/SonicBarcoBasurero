@@ -49,50 +49,43 @@ import static src.utils.constants.Constants.TIME_MINUTES_GAME;
  */
 public class GameScreen extends UIScreen {
     // === Componentes del juego ===
-    private final Stage stage;                         // Stage principal que contiene los actores físicos del juego.
-    private final World world;                         // Mundo de físicas basado en Box2D.
-    public ThreadSecureWorld threadSecureWorld;        // Mundo de físicas con soporte para hilos seguros.
-    private Boolean isLoad;                            // Bandera que indica si la pantalla se ha cargado completamente.
+    private final Stage stage; // Stage principal que contiene los actores físicos del juego.
+    private final World world; // Mundo de físicas basado en Box2D.
+    public ThreadSecureWorld threadSecureWorld; // Mundo de físicas con soporte para hilos seguros.
+    private Boolean isLoad; // Bandera que indica si la pantalla se ha cargado completamente.
 
     private Player player;
     private final ArrayList<ActorBox2d> actors;
     private final HashMap<Integer, Entity> entities;
 
-    //private final Random random;
     public Vector2 lobbyPlayer;
     public SpawnManager spawnMirror;
     public ArrayList<Vector2> spawnPlayer;
 
-
     // === Red y tiempo ===
-    private final Vector2 lastPosition;                // Última posición conocida del jugador, usada para sincronización.
-    private Float sendTime;                            // Temporizador para limitar la frecuencia de envío de datos por red.
-    private final SecondsTimer timeGame;               // Temporizador que mide la duración de la partida.
+    private final Vector2 lastPosition; // Última posición conocida del jugador, usada para sincronización.
+    private Float sendTime; // Temporizador para limitar la frecuencia de envío de datos por red.
+    private final SecondsTimer timeGame; // Temporizador que mide la duración de la partida.
     private final HashMap<Integer, ScorePlayer> scorePlayers; // Puntuaciones de los jugadores indexadas por ID.
 
-    // === Spawns y posiciones ===
-    //private final Random random;                       // Generador de números aleatorios para ubicaciones de aparición.
-    //public Vector2 lobbyPlayer;                        // Posición fija donde aparece el jugador antes de comenzar la partida.
-    //public ArrayList<Vector2> spawnPlayer;             // Lista de posiciones disponibles para aparición de jugadores.
-
     // === Interfaz de Usuario (UI) ===
-    private LayersManager layersManager;               // Gestor de capas para organizar los elementos UI superpuestos.
-    private Label odsPointsLabel, gameTimeLabel;       // Etiquetas que muestran puntos obtenidos y tiempo restante.
-    private Chat chat;                                 // Componente de chat para mensajería entre jugadores.
-    private PowerView imagePower;                      // Indicador visual del poder activo del jugador.
-    private GameLayerManager gameLayerManager;         // Gestor de capas para menús o ventanas emergentes.
+    private LayersManager layersManager; // Gestor de capas para organizar los elementos UI superpuestos.
+    private Label odsPointsLabel, gameTimeLabel; // Etiquetas que muestran puntos obtenidos y tiempo restante.
+    private Chat chat; // Componente de chat para mensajería entre jugadores.
+    private PowerView imagePower; // Indicador visual del poder activo del jugador.
+    private GameLayerManager gameLayerManager; // Gestor de capas para menús o ventanas emergentes.
 
     // === Indicadores visuales ===
     private final CameraShakeManager cameraShakeManager; // Administrador de efecto de vibración de cámara.
-    private IndicatorManager mirrorIndicators;         // Indicadores visuales que señalan la posición de espejos.
-    private BorderIndicator maxScoreIndicator;         // Indicador del jugador con mayor puntuación.
-    private Integer idTargetMaxScore;                  // ID del jugador que actualmente tiene la puntuación más alta.
+    private IndicatorManager mirrorIndicators; // Indicadores visuales que señalan la posición de espejos.
+    private BorderIndicator maxScoreIndicator; // Indicador del jugador con mayor puntuación.
+    private Integer idTargetMaxScore; // ID del jugador que actualmente tiene la puntuación más alta.
 
     // === Sonidos ===
-    private Sound mirrorChangeSound;                   // Sonido que se reproduce cuando un espejo cambia de posición.
+    private Sound mirrorChangeSound; // Sonido que se reproduce cuando un espejo cambia de posición.
 
     // === Depuración ===
-    private final Box2DDebugRenderer debugRenderer;    // Herramienta visual para depurar el mundo físico Box2D.
+    private final Box2DDebugRenderer debugRenderer; // Herramienta visual para depurar el mundo físico Box2D.
 
     /**
      * Constructor de la clase GameScreen.
@@ -113,9 +106,10 @@ public class GameScreen extends UIScreen {
         scorePlayers = new HashMap<>();
         timeGame = new SecondsTimer(TIME_MINUTES_GAME, 0);
 
-        //random = new Random();
         spawnMirror = new SpawnManager();
         spawnPlayer = new ArrayList<>();
+        spawnPlayer.add(new Vector2(100, 100)); // Coordenadas de ejemplo, ajusta según necesites
+
         idTargetMaxScore = -1;
 
         initSounds();
@@ -282,8 +276,6 @@ public class GameScreen extends UIScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             gameLayerManager.setVisibleWithSound(!gameLayerManager.isVisible());
         }
-
-
 
         actLogic(delta);
     }

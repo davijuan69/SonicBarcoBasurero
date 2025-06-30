@@ -157,7 +157,6 @@ public class TiledManager {
                 continue; // Pasa al siguiente objeto.
             }
             // Si hay un tipo definido (ej. "lobby"), se usa como la posición del jugador en el lobby.
-            game.lobbyPlayer = new Vector2(X, Y);
 
         }
     }

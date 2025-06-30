@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
 import src.utils.animation.SheetCutter;
 import src.utils.stateMachine.StateMachine;
+import src.utils.stateMachine.StateMachine;
 import src.world.entities.Entity;
 //import src.world.entities.player.powers.*;
 import src.world.entities.player.states.*;

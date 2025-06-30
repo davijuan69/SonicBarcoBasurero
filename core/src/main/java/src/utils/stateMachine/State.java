@@ -1,5 +1,7 @@
 package src.utils.stateMachine;
 
+
+
 /**
  * La interfaz `State` define el contrato para cualquier estado dentro de una máquina de estados.
  * Cada clase que implemente esta interfaz debe proporcionar una lógica específica
@@ -8,6 +10,10 @@ package src.utils.stateMachine;
  * que pueden tener diferentes modos operativos a lo largo del tiempo.
  */
 public interface State {
+
+
+
+
 
     /**
      * Este método se invoca una vez cuando el estado se activa o se entra en él.
