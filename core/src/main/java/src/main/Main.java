@@ -104,6 +104,11 @@ public class Main extends Game {
         assetManager.load("ui/bg/img.png", Texture.class);
         assetManager.load("ui/uiskin.json", Skin.class);
         assetManager.load("yoshi.jpg", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_Inactivo.png", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_correr1.png", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_correr2.png", Texture.class);
+
+
 
 
         System.out.println("Cargando activos...");

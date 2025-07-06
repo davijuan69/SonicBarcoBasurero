@@ -57,7 +57,7 @@ public abstract class PlayerCommon extends Entity {
 //    protected FallState fallState;
 //    protected DownState downState;
 //    protected DashState dashState;
-//    protected RunState runState;
+    protected RunState runState;
 //    protected StunState stunState;
 
     public enum AnimationType {
@@ -127,11 +127,11 @@ public abstract class PlayerCommon extends Entity {
 
     private void initAnimations(AssetManager assetManager){
         walkAnimation = new Animation<>(0.11f,
-            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 10));
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr1.png"), 6));
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         idleAnimation = new Animation<>(0.1f,
-            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 31));
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_Inactivo.png"), 9));
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
 //        downAnimation = new Animation<>(0.1f,
@@ -147,8 +147,8 @@ public abstract class PlayerCommon extends Entity {
 //        fallSimpleAnimation = new Animation<>(0.04f,
 //            SheetCutter.cutHorizontal(assetManager.get(""), 20));
 //
-//        runAnimation = new Animation<>(0.04f,
-//            SheetCutter.cutHorizontal(assetManager.get(""), 8));
+        runAnimation = new Animation<>(0.04f,
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr2.png"), 4));
 //        runAnimation.setPlayMode(Animation.PlayMode.LOOP);
 //
 //        changeRunAnimation = new Animation<>(1f,
@@ -202,7 +202,7 @@ public abstract class PlayerCommon extends Entity {
 //            case JUMP -> stateMachine.setState(jumpState);
 //            case FALL -> stateMachine.setState(fallState);
 //            case DOWN -> stateMachine.setState(downState);
-//            case RUN -> stateMachine.setState(runState);
+            case RUN -> stateMachine.setState(runState);
 //            case DASH -> stateMachine.setState(dashState);
 //            case STUN -> stateMachine.setState(stunState);
         }
