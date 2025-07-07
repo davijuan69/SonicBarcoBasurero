@@ -107,6 +107,11 @@ public class Main extends Game {
         assetManager.load("world/entities/Sonic/Sonic_Inactivo.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr1.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr2.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/Cave.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/greenhillprestado.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/GreenHill.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/otros.png", Texture.class);
+
 
 
 
