@@ -134,6 +134,7 @@ public class TiledManager {
             float X = object.getProperties().get("x", Float.class) / tiledSize;
             float Y = object.getProperties().get("y", Float.class )/ tiledSize;
 
+
             // Si el tipo de entidad es "MIRROR", añade su posición al `spawnMirror` del juego.
 
 

@@ -35,6 +35,9 @@ import src.world.ActorBox2d;
 import src.world.entities.player.Player;
 import src.world.entities.player.PlayerCommon;
 import src.world.entities.Entity;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import src.utils.managers.TiledManager;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +56,9 @@ public class GameScreen extends UIScreen {
     private final World world; // Mundo de físicas basado en Box2D.
     public ThreadSecureWorld threadSecureWorld; // Mundo de físicas con soporte para hilos seguros.
     private Boolean isLoad; // Bandera que indica si la pantalla se ha cargado completamente.
+
+    private final OrthogonalTiledMapRenderer tiledRenderer;
+    private final TiledManager tiledManager;
 
     private Player player;
     private final ArrayList<ActorBox2d> actors;
@@ -101,6 +107,10 @@ public class GameScreen extends UIScreen {
         threadSecureWorld = new ThreadSecureWorld(world);
         world.setContactListener(new GameContactListener(this));
 
+        tiledManager = new TiledManager(this);
+        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic_version_beta.tmx");
+
+        world.setContactListener(new GameContactListener(this));
         lastPosition = new Vector2();
         sendTime = 0f;
         scorePlayers = new HashMap<>();
@@ -256,6 +266,10 @@ public class GameScreen extends UIScreen {
 
         camera.position.x = MathUtils.lerp(camera.position.x, player.getX() + (player.isFlipX() ? -32 : 32), 0.10f);
         camera.position.y = MathUtils.lerp(camera.position.y, player.getY(), 0.3f);
+
+        tiledRenderer.setView(camera);
+
+        tiledRenderer.render();
 
         cameraUI.position.x = camera.position.x;
         cameraUI.position.y = camera.position.y;
