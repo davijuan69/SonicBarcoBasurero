@@ -14,6 +14,7 @@ import src.utils.constants.ConsoleColor;
 import java.util.ArrayList;
 
 import static src.utils.constants.Constants.PIXELS_IN_METER;
+import src.world.FloorPoly;
 
 /**
  * La clase `TiledManager` se encarga de cargar y parsear los datos de un mapa Tiled (.tmx).
@@ -59,41 +60,69 @@ public class TiledManager {
             // Si el objeto es un polígono (definido en Tiled), se procesa como un `FloorPoly`.
             if (object instanceof PolygonMapObject polygonObject) {
                 Polygon polygon = polygonObject.getPolygon();
-
-                // Obtener los atributos del polígono (vértices, posición X, posición Y).
-                float[] vertices = polygon.getVertices();
-                float x = polygon.getX();
-                float y = polygon.getY();
-
-                // Convierte los vértices del polígono de píxeles a unidades de mundo (dividiendo por tiledSize).
-                Vector2[] verticesVector = new Vector2[vertices.length/2];
+                float[] vertices = polygon.getTransformedVertices();
+                int numVerts = vertices.length / 2;
+                if (numVerts < 3 || numVerts > 8) {
+                    System.out.println("[WARN] Polígono ignorado por tener " + numVerts + " vértices (Box2D solo acepta 3-8)");
+                    continue;
+                }
+                // Verificar vértices repetidos o lados muy pequeños
+                boolean valido = true;
+                for (int i = 0; i < numVerts; i++) {
+                    float x1 = vertices[2*i];
+                    float y1 = vertices[2*i+1];
+                    float x2 = vertices[2*((i+1)%numVerts)];
+                    float y2 = vertices[2*((i+1)%numVerts)+1];
+                    float dist = (float)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
+                    if (dist < 1e-2) {
+                        System.out.println("[WARN] Polígono ignorado por vértices muy juntos o repetidos: " + x1 + "," + y1 + " <-> " + x2 + "," + y2);
+                        valido = false;
+                        break;
+                    }
+                }
+                System.out.print("[DEBUG] Vértices del polígono: ");
+                for (int i = 0; i < numVerts; i++) {
+                    System.out.print("(" + vertices[2*i]/tiledSize + "," + vertices[2*i+1]/tiledSize + ") ");
+                }
+                System.out.println();
+                if (!valido) continue;
+                float x = 0;
+                float y = 0;
+                // Convertir los vértices de píxeles a unidades de mundo
+                Vector2[] verticesVector = new Vector2[numVerts];
                 for (int i = 0; i < vertices.length; i+=2) {
                     verticesVector[i/2] = new Vector2(vertices[i]/tiledSize, vertices[i+1]/tiledSize);
                 }
-
-                // Crea una nueva instancia de `FloorPoly` y la añade como un actor en el juego.
+                // Crear y agregar el FloorPoly
+                FloorPoly floorPoly = new FloorPoly(game.getWorld(), verticesVector, x, y);
+                game.addActor(floorPoly);
+                continue;
             }
-
-            // Intenta obtener el tipo de la propiedad "type" del objeto.
-            String type = object.getProperties().get("type", String.class);
-            // Obtiene las propiedades de posición y tamaño del objeto, escalando a unidades de mundo.
+            // Si es un rectángulo (tiene width y height), también lo agregamos como FloorPoly
             Float X = (Float) object.getProperties().get("x");
             Float Y = (Float) object.getProperties().get("y");
             Float W = (Float) object.getProperties().get("width");
             Float H = (Float) object.getProperties().get("height");
-
-            // Si el tipo no está definido (es null), se asume que es un tipo de "FLOOR" por defecto.
-            if (type == null) {
-                continue; // Pasa al siguiente objeto.
+            if (X != null && Y != null && W != null && H != null) {
+                if (W <= 0 || H <= 0) {
+                    System.out.println("[WARN] Rectángulo ignorado por ancho o alto <= 0: (" + X + "," + Y + "," + W + "," + H + ")");
+                    continue;
+                }
+                // Crear los vértices del rectángulo
+                Vector2[] rectVerts = new Vector2[] {
+                    new Vector2(0, 0),
+                    new Vector2(W/tiledSize, 0),
+                    new Vector2(W/tiledSize, H/tiledSize),
+                    new Vector2(0, H/tiledSize)
+                };
+                System.out.print("[DEBUG] Vértices del rectángulo: ");
+                for (Vector2 v : rectVerts) {
+                    System.out.print("(" + v.x + "," + v.y + ") ");
+                }
+                System.out.println();
+                FloorPoly floorPoly = new FloorPoly(game.getWorld(), rectVerts, X/tiledSize, Y/tiledSize);
+                game.addActor(floorPoly);
             }
-            try{
-                // Intenta crear y añadir una entidad estática usando el tipo obtenido del mapa.
-            }
-            catch (IllegalArgumentException e) {
-                // Si el tipo de estático no es válido (no coincide con un enum `StaticFactory.Type`), imprime un error.
-                System.out.println(ConsoleColor.GRAY +  "Tipo de static " + type + " no encontrado" + ConsoleColor.RESET);
-            }
-
         }
     }
 
@@ -174,9 +203,10 @@ public class TiledManager {
      * puntos de aparición del jugador, estáticos y puntos de aparición genéricos.
      */
     public void makeMap() {
-        parsedPlayer(tiledmap.getLayers().get("playerSpawn").getObjects()); // Procesa la capa de aparición del jugador.
-        parsedStaticMap(tiledmap.getLayers().get("static").getObjects()); // Procesa la capa de objetos estáticos.
-        parsedSpawnMap(tiledmap.getLayers().get("spawn").getObjects()); // Procesa la capa de puntos de aparición.
+        // parsedPlayer(tiledmap.getLayers().get("playerSpawn").getObjects()); // Procesa la capa de aparición del jugador.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones suelo").getObjects()); // Procesa la capa de colisiones de suelo.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones techo y puas del tunel").getObjects()); // Procesa la capa de colisiones de techo y puas.
+        // parsedSpawnMap(tiledmap.getLayers().get("spawn").getObjects()); // Procesa la capa de puntos de aparición.
     }
 
     /**

@@ -52,9 +52,9 @@ public abstract class PlayerCommon extends Entity {
     protected StateType currentStateType;
     private final StateMachine stateMachine;
     protected IdleState idleState;
-//    protected JumpState jumpState;
+    protected JumpState jumpState;
     protected WalkState walkState;
-//    protected FallState fallState;
+    protected FallState fallState;
 //    protected DownState downState;
 //    protected DashState dashState;
     protected RunState runState;
@@ -71,6 +71,7 @@ public abstract class PlayerCommon extends Entity {
         CHANGERUN,
         DASH,
         DAMAGE,
+        MAXSPEED,
     }
     private AnimationType currentAnimationType;
     protected Animation<TextureRegion> walkAnimation;
@@ -83,6 +84,7 @@ public abstract class PlayerCommon extends Entity {
     protected Animation<TextureRegion> changeRunAnimation;
     protected Animation<TextureRegion> dashAnimation;;
     protected Animation<TextureRegion> damageAnimation;;
+    protected Animation<TextureRegion> maxSpeedAnimation;
 
     private final Sprite secondSprite;
     private Animation<TextureRegion> secondCurrentAnimation;
@@ -90,6 +92,17 @@ public abstract class PlayerCommon extends Entity {
     protected float bodyWidth, bodyHeight;
 
     private Boolean paused = false;
+
+    // Variables para transición suave de animaciones
+    private float walkToRunTimer = 0f;
+    private float runToMaxTimer = 0f;
+    private boolean hasBoostedRun = false;
+    private boolean hasBoostedMax = false;
+    private static final float TRANSITION_TIME = 0.7f;
+    private static final float RUN_THRESHOLD = 4f;
+    private static final float MAX_THRESHOLD = 5f;
+    private static final float RUN_BOOST = 10f;
+    private static final float MAX_BOOST = 15f;
 
     public PlayerCommon(World world, Float x, Float y, AssetManager assetManager, Integer id) {
         super(world, new Rectangle(x,y,2.25f,2.25f), assetManager, id, null);
@@ -134,22 +147,25 @@ public abstract class PlayerCommon extends Entity {
             SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_Inactivo.png"), 9));
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-//        downAnimation = new Animation<>(0.1f,
-//            SheetCutter.cutHorizontal(assetManager.get(""), 31));
-//        downAnimation.setPlayMode(Animation.PlayMode.LOOP);
-//
-//        jumpAnimation = new Animation<>(1,
-//            SheetCutter.cutHorizontal(assetManager.get(""), 1));
-//
-//        fallAnimation = new Animation<>(0.04f,
-//            SheetCutter.cutHorizontal(assetManager.get(""), 26));
-//
+        // Animaciones de salto y caída usando yoshi.png (1 frame)
+        jumpAnimation = new Animation<>(0.1f,
+            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 1));
+        jumpAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+
+        fallAnimation = new Animation<>(0.1f,
+            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 1));
+        fallAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+
 //        fallSimpleAnimation = new Animation<>(0.04f,
 //            SheetCutter.cutHorizontal(assetManager.get(""), 20));
 //
         runAnimation = new Animation<>(0.04f,
             SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr2.png"), 4));
-//        runAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        runAnimation.setPlayMode(Animation.PlayMode.LOOP);
+
+        maxSpeedAnimation = new Animation<>(0.03f,
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr3.png"), 4));
+        maxSpeedAnimation.setPlayMode(Animation.PlayMode.LOOP);
 //
 //        changeRunAnimation = new Animation<>(1f,
 //            SheetCutter.cutHorizontal(assetManager.get(""), 1));
@@ -181,6 +197,7 @@ public abstract class PlayerCommon extends Entity {
             case CHANGERUN -> setCurrentAnimation(changeRunAnimation);
             case DASH -> setCurrentAnimation(dashAnimation);
             case DAMAGE -> setCurrentAnimation(damageAnimation);
+            case MAXSPEED -> setCurrentAnimation(maxSpeedAnimation);
         }
 
     }
@@ -199,8 +216,8 @@ public abstract class PlayerCommon extends Entity {
         switch (stateType){
             case IDLE -> stateMachine.setState(idleState);
             case WALK -> stateMachine.setState(walkState);
-//            case JUMP -> stateMachine.setState(jumpState);
-//            case FALL -> stateMachine.setState(fallState);
+            case JUMP -> stateMachine.setState(jumpState);
+            case FALL -> stateMachine.setState(fallState);
 //            case DOWN -> stateMachine.setState(downState);
             case RUN -> stateMachine.setState(runState);
 //            case DASH -> stateMachine.setState(dashState);
@@ -258,5 +275,50 @@ public abstract class PlayerCommon extends Entity {
     public void act(float delta) {
         if (paused) return;
         stateMachine.update(delta);
+        float vx = body.getLinearVelocity().x;
+        float absVx = Math.abs(vx);
+        boolean movingRight = vx > 0;
+        // Transición de caminar a correr
+        if (getCurrentStateType() == StateType.WALK || getCurrentStateType() == StateType.RUN) {
+            if (absVx > MAX_THRESHOLD) {
+                runToMaxTimer += delta;
+                walkToRunTimer = 0f;
+                if (runToMaxTimer > TRANSITION_TIME) {
+                    if (getCurrentAnimationType() != AnimationType.MAXSPEED) {
+                        setAnimation(AnimationType.MAXSPEED);
+                        if (!hasBoostedMax) {
+                            body.applyLinearImpulse((movingRight ? MAX_BOOST : -MAX_BOOST), 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
+                            hasBoostedMax = true;
+                        }
+                    }
+                }
+            } else if (absVx > RUN_THRESHOLD) {
+                walkToRunTimer += delta;
+                runToMaxTimer = 0f;
+                hasBoostedMax = false;
+                if (walkToRunTimer > TRANSITION_TIME) {
+                    if (getCurrentAnimationType() != AnimationType.RUN) {
+                        setAnimation(AnimationType.RUN);
+                        if (!hasBoostedRun) {
+                            body.applyLinearImpulse((movingRight ? RUN_BOOST : -RUN_BOOST), 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
+                            hasBoostedRun = true;
+                        }
+                    }
+                }
+            } else {
+                walkToRunTimer = 0f;
+                runToMaxTimer = 0f;
+                hasBoostedRun = false;
+                hasBoostedMax = false;
+                if (getCurrentAnimationType() != AnimationType.WALK) {
+                    setAnimation(AnimationType.WALK);
+                }
+            }
+        } else {
+            walkToRunTimer = 0f;
+            runToMaxTimer = 0f;
+            hasBoostedRun = false;
+            hasBoostedMax = false;
+        }
     }
 }

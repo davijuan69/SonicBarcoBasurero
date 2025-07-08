@@ -219,7 +219,7 @@ public class GameScreen extends UIScreen {
                 player.setCurrentState(Player.StateType.IDLE);
             });
         }else{
-            //tiledManager.makeMap();
+            tiledManager.makeMap();
             addMainPlayer();
             //setScore(3);
             initUI();

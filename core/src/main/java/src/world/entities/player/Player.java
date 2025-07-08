@@ -104,8 +104,10 @@ public class Player extends PlayerCommon {
         idleState = new IdleState(this);
         walkState = new WalkState(this);
         runState = new RunState(this);
-       /* jumpState = new JumpState(this);
+        jumpState = new JumpState(this);
         fallState = new FallState(this);
+       /*
+
         downState = new DownState(this);
         dashState = new DashState(this);
 

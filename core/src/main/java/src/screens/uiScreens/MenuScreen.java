@@ -27,8 +27,10 @@ public class MenuScreen extends UIScreen {
         super(main); // Llama al constructor de la clase padre (UIScreen) para inicializar el Stage y estilos básicos.
 
         // --- Carga y configura la imagen de fondo ---
-        // Asumo que tu imagen "ui/bg/img.png" es la que se ve en la captura
         Image bgImage = new Image(main.getAssetManager().get("ui/bg/img.png", Texture.class));
+        bgImage.setScaling(com.badlogic.gdx.utils.Scaling.stretch); // Hace que el fondo se estire
+        bgImage.setFillParent(true); // Hace que ocupe todo el Stage
+        stageUI.addActor(bgImage); // Agrega el fondo directamente al Stage antes que cualquier otro actor
 
         // --- Configuración de los botones principales (Jugar, Configuración, Salir) ---
         // Asumiendo que myImageTextbuttonStyle ya está bien definido en UIScreen
@@ -65,22 +67,15 @@ public class MenuScreen extends UIScreen {
 
 
         // --- Disposición de los elementos de la UI usando LayersManager ---
-        // Usaremos 3 capas principales: Fondo, Logo, y Botones.
         LayersManager layersManager = new LayersManager(stageUI, 2);
-
-        // Capa 1 (más profunda): La imagen de fondo
-        layersManager.setZindex(1);
-        layersManager.getLayer().add(bgImage).grow(); // La imagen de fondo crecerá para llenar toda la pantalla
 
         // Capa 0: Los botones (Jugar, Configuración, Salir)
         layersManager.setZindex(0);
-        layersManager.getLayer().center(); // Centra el grupo de botones horizontalmente
-        // Ajusta este padTop para mover los botones hacia arriba o abajo en relación al centro vertical
-        layersManager.getLayer().padTop(Gdx.graphics.getHeight() * 0.90f);
-        layersManager.getLayer().padLeft(Gdx.graphics.getWidth() * -0.05f);// Posición vertical de los botones
-        layersManager.getLayer().add(playButton).width(Gdx.graphics.getWidth() * 0.38f).height(Gdx.graphics.getHeight() * 0.1f).pad(10).row();
-        layersManager.getLayer().add(optionButton).width(Gdx.graphics.getWidth() * 0.38f).height(Gdx.graphics.getHeight() * 0.1f).pad(10).row();
-        layersManager.getLayer().add(exitButton).width(Gdx.graphics.getWidth() * 0.38f).height(Gdx.graphics.getHeight() * 0.1f).pad(10).row();
+        layersManager.getLayer().setFillParent(true);
+        layersManager.getLayer().bottom().padBottom(50); // Botones pegados abajo con un pequeño margen
+        layersManager.getLayer().add(playButton).width(300).height(80).pad(10).row();
+        layersManager.getLayer().add(optionButton).width(300).height(80).pad(10).row();
+        layersManager.getLayer().add(exitButton).width(300).height(80).pad(10).row();
         // Los tamaños de los botones se ajustan a un porcentaje del ancho/alto de la pantalla para ser responsivos
     }
 
@@ -93,5 +88,10 @@ public class MenuScreen extends UIScreen {
         super.show(); // Llama al método show de la superclase (UIScreen) para configurar el InputProcessor.
         // Establece la pista de sonido activa del SoundManager a la pista de menú.
         SingleSoundManager.getInstance().setSoundTracks(Main.SoundTrackType.MENU);
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        stageUI.getViewport().update(width, height, true);
     }
 }
