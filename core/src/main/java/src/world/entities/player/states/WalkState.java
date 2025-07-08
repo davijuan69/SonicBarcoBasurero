@@ -22,10 +22,11 @@ public class WalkState extends CanBasicMoveState{
     @Override
     public void update(Float delta) {
         super.update(delta);
-        if (Gdx.input.isKeyPressed(PlayerControl.RUN)){
+        Vector2 velocity = player.getBody().getLinearVelocity();
+        // Cambia a RUN automáticamente si la velocidad supera el umbral de caminar
+        if (Math.abs(velocity.x) > Player.WALK_MAX_SPEED + 0.1f) {
             player.setCurrentState(Player.StateType.RUN);
         }
-        Vector2 velocity = player.getBody().getLinearVelocity();
         if (velocity.x == 0 || (!Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT))){
             player.setCurrentState(Player.StateType.IDLE);
         }
