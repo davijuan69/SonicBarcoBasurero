@@ -16,7 +16,7 @@ public class FallState extends CanMoveState {
 
     @Override
     public void start() {
-        player.setAnimation(Player.AnimationType.FALLSIMPLE);
+        // La animación se decidirá en update según la velocidad de caída
     }
 
     @Override
@@ -25,6 +25,16 @@ public class FallState extends CanMoveState {
 
         Vector2 velocity = player.getBody().getLinearVelocity();
         fallForce = Math.max(fallForce, Math.abs(velocity.y));
+        // Cambiar animación según la velocidad de caída
+        if (velocity.y < -10) {
+            if (player.getCurrentAnimationType() != Player.AnimationType.FALL) {
+                player.setAnimation(Player.AnimationType.FALL);
+            }
+        } else {
+            if (player.getCurrentAnimationType() != Player.AnimationType.FALLSIMPLE) {
+                player.setAnimation(Player.AnimationType.FALLSIMPLE);
+            }
+        }
         if (velocity.y == 0){
             if (velocity.x == 0)  player.setCurrentState(Player.StateType.IDLE);
             else player.setCurrentState(Player.StateType.WALK);

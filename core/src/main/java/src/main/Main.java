@@ -116,6 +116,9 @@ public class Main extends Game {
         assetManager.load("tiled/maps/tiledSets/otros.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr3.png", Texture.class);
         assetManager.load("world/entities/Enemigos/enemigo1.png", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_idle.png", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_bolita.png", Texture.class);
+        assetManager.load("world/entities/Sonic/Sonic_cayendo.png", Texture.class);
 
 
 

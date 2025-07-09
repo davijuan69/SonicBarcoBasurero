@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
-import static src.utils.constants.Constants.TIME_MINUTES_GAME;
+//import static src.utils.constants.Constants.TIME_MINUTES_GAME;
 
 /**
  * GameScreen representa la pantalla principal del juego.
@@ -76,7 +76,7 @@ public class GameScreen extends UIScreen {
     // === Red y tiempo ===
     private final Vector2 lastPosition; // Última posición conocida del jugador, usada para sincronización.
     private Float sendTime; // Temporizador para limitar la frecuencia de envío de datos por red.
-    private final SecondsTimer timeGame; // Temporizador que mide la duración de la partida.
+    //private final SecondsTimer timeGame; // Temporizador que mide la duración de la partida.
     private final HashMap<Integer, ScorePlayer> scorePlayers; // Puntuaciones de los jugadores indexadas por ID.
 
     // === Interfaz de Usuario (UI) ===
@@ -120,13 +120,13 @@ public class GameScreen extends UIScreen {
         world.setContactListener(new GameContactListener(this));
 
         tiledManager = new TiledManager(this);
-        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic_version_beta.tmx");
+        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic.tmx");
 
         world.setContactListener(new GameContactListener(this));
         lastPosition = new Vector2();
         sendTime = 0f;
         scorePlayers = new HashMap<>();
-        timeGame = new SecondsTimer(TIME_MINUTES_GAME, 0);
+        //timeGame = new SecondsTimer(TIME_MINUTES_GAME, 0);
 
         spawnMirror = new SpawnManager();
         spawnPlayer = new ArrayList<>();
@@ -207,7 +207,7 @@ public class GameScreen extends UIScreen {
         threadSecureWorld.clearModifications();
         threadSecureWorld.addModification(() -> {
             clearAll();
-            timeGame.resetTimer();
+            //timeGame.resetTimer();
             //main.changeScreen(Main.Screens.ENDGAME);
             isLoad = false;
         });
@@ -252,8 +252,8 @@ public class GameScreen extends UIScreen {
      * Ejecuta la lógica principal del juego (tiempo, físicas, actores).
      */
     public void actLogic(float delta) {
-        if (timeGame.isFinished()) endGame();
-        timeGame.update(delta);
+//        if (timeGame.isFinished()) endGame();
+//        timeGame.update(delta);
         stage.act();
         threadSecureWorld.step(delta, 6, 2);
     }

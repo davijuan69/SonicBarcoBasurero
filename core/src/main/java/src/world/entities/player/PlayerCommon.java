@@ -143,17 +143,17 @@ public abstract class PlayerCommon extends Entity {
             SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr1.png"), 6));
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-        idleAnimation = new Animation<>(0.1f,
-            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_Inactivo.png"), 9));
+        idleAnimation = new Animation<>(0.5f,
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_idle.png"), 4));
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         // Animaciones de salto y caída usando yoshi.png (1 frame)
         jumpAnimation = new Animation<>(0.1f,
-            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 1));
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_bolita.png"), 1));
         jumpAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
         fallAnimation = new Animation<>(0.1f,
-            SheetCutter.cutHorizontal(assetManager.get("yoshi.jpg"), 1));
+            SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_cayendo.png"), 2));
         fallAnimation.setPlayMode(Animation.PlayMode.NORMAL);
 
 //        fallSimpleAnimation = new Animation<>(0.04f,
