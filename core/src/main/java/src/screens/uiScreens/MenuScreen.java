@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import src.main.Main;
 import src.screens.components.LayersManager;
 import src.utils.sound.SingleSoundManager;
@@ -34,6 +36,13 @@ public class MenuScreen extends UIScreen {
 
         // --- Configuración de los botones principales (Jugar, Configuración, Salir) ---
         // Asumiendo que myImageTextbuttonStyle ya está bien definido en UIScreen
+        TextureRegionDrawable drawableUp = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/info.png", Texture.class));
+        TextureRegionDrawable drawableHover = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/infoHover.png", Texture.class));
+        drawableHover.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        drawableUp.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        ImageButton.ImageButtonStyle imageButtonStyle = new ImageButton.ImageButtonStyle();
+        imageButtonStyle.imageUp = drawableUp;
+        imageButtonStyle.imageOver = drawableHover;
 
         // Botón "Jugar"
         ImageTextButton playButton = new ImageTextButton("Jugar", myImageTextbuttonStyle);
@@ -66,6 +75,19 @@ public class MenuScreen extends UIScreen {
         exitButton.addListener(hoverListener); // Añade el efecto de sonido al pasar el ratón
 
 
+        // Botón "Acerca De"
+        ImageButton infoButton = new ImageButton(imageButtonStyle);
+        infoButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                main.changeScreen(Main.Screens.INFO);
+            }
+        });
+        infoButton.addListener(hoverListener);
+
+
+
+
         // --- Disposición de los elementos de la UI usando LayersManager ---
         LayersManager layersManager = new LayersManager(stageUI, 2);
 
@@ -76,7 +98,13 @@ public class MenuScreen extends UIScreen {
         layersManager.getLayer().add(playButton).width(300).height(80).pad(10).row();
         layersManager.getLayer().add(optionButton).width(300).height(80).pad(10).row();
         layersManager.getLayer().add(exitButton).width(300).height(80).pad(10).row();
+
         // Los tamaños de los botones se ajustan a un porcentaje del ancho/alto de la pantalla para ser responsivos
+
+        layersManager.setZindex(1);
+        layersManager.getLayer().setFillParent(true);
+        layersManager.getLayer().top().right().pad(20); // Posiciona en la esquina superior derecha con un margen
+        layersManager.getLayer().add(infoButton).width(80).height(80);
     }
 
     /**

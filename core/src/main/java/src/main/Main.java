@@ -37,11 +37,11 @@ public class Main extends Game {
      */
     // En Main.java
     public enum Screens {
-        MENU,           // Ahora es el Índice 0
-        OPTION,         // Índice 1
-        GAME,           // Índice 2
-        //INFO,           // Índice 3
-        //ENDGAME,        // Índice 4
+        MENU,
+        INFO,
+        OPTION,
+        GAME,
+        // ENDGAME,
     }
 
     public Color playerColor;
@@ -148,6 +148,7 @@ public class Main extends Game {
         screensList  = new ArrayList<>();
         // Asegúrate de que las pantallas se añaden en el mismo orden que en el enum Screens.
         screensList.add(new MenuScreen(this));
+        screensList.add(new InfoScreen(this));
         screensList.add(new OptionScreen(this));
         screensList.add(new GameScreen(this));
 
