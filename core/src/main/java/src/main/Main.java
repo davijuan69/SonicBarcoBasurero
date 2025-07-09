@@ -16,6 +16,7 @@ import src.utils.sound.SingleSoundManager;
 import src.utils.sound.SoundManager;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * La clase `Main` es el punto de entrada principal del juego LibGDX.
@@ -27,6 +28,8 @@ public class Main extends Game {
     private AssetManager assetManager;
     private ArrayList<Screen> screensList;
     private Skin skin;
+    private AtomicInteger ids;
+
 
     /**
      * Enumeración que define todos los tipos de pantallas disponibles en el juego.
@@ -112,7 +115,7 @@ public class Main extends Game {
         assetManager.load("tiled/maps/tiledSets/GreenHill.png", Texture.class);
         assetManager.load("tiled/maps/tiledSets/otros.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr3.png", Texture.class);
-        //assetManager.load("", Texture.class);
+        assetManager.load("world/entities/Enemigos/enemigo1.png", Texture.class);
 
 
 
@@ -187,6 +190,14 @@ public class Main extends Game {
     public void changeScreen(Screens screen){
         setScreen(screensList.get(screen.ordinal()));
     }
+
+    public void setIds(int ids) {
+        this.ids.set(ids);
+    }
+    public Integer getIds() {
+        return ids.incrementAndGet();
+    }
+
 
     @Override
     public void render() {

@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import src.main.Main;
+import src.world.entities.EntityFactory;
 import src.utils.ThreadSecureWorld;
 import src.screens.components.LayersManager;
 import src.screens.components.PowerView;
@@ -26,12 +27,14 @@ import src.screens.game.gameLayers.GameLayerManager;
 import src.screens.uiScreens.UIScreen;
 import src.utils.ScorePlayer;
 import src.utils.SecondsTimer;
+import src.utils.constants.ConsoleColor;
 import src.utils.indicators.BorderIndicator;
 import src.utils.indicators.IndicatorManager;
 import src.utils.managers.CameraShakeManager;
 import src.utils.managers.SpawnManager;
 import src.utils.sound.SingleSoundManager;
 import src.world.ActorBox2d;
+import src.world.entities.enemies.Enemy;
 import src.world.entities.player.Player;
 import src.world.entities.player.PlayerCommon;
 import src.world.entities.Entity;
@@ -68,6 +71,8 @@ public class GameScreen extends UIScreen {
     public SpawnManager spawnMirror;
     public ArrayList<Vector2> spawnPlayer;
 
+    private int nextEntityId = 1000; // Contador para generar IDs únicos para nuevas entidades
+
     // === Red y tiempo ===
     private final Vector2 lastPosition; // Última posición conocida del jugador, usada para sincronización.
     private Float sendTime; // Temporizador para limitar la frecuencia de envío de datos por red.
@@ -80,6 +85,10 @@ public class GameScreen extends UIScreen {
     private Chat chat; // Componente de chat para mensajería entre jugadores.
     private PowerView imagePower; // Indicador visual del poder activo del jugador.
     private GameLayerManager gameLayerManager; // Gestor de capas para menús o ventanas emergentes.
+
+    //Factories
+    public final EntityFactory entityFactory;
+
 
     // === Indicadores visuales ===
     private final CameraShakeManager cameraShakeManager; // Administrador de efecto de vibración de cámara.
@@ -102,6 +111,9 @@ public class GameScreen extends UIScreen {
         actors = new ArrayList<>();
         entities = new HashMap<>();
 
+        this.entityFactory = new EntityFactory(this); // Inicializa la fábrica de entidades
+
+
         stage = new Stage(new ScreenViewport());
         world = new World(new Vector2(0, -30f), true); // Gravedad descendente.
         threadSecureWorld = new ThreadSecureWorld(world);
@@ -118,7 +130,7 @@ public class GameScreen extends UIScreen {
 
         spawnMirror = new SpawnManager();
         spawnPlayer = new ArrayList<>();
-        spawnPlayer.add(new Vector2(100, 100)); // Coordenadas de ejemplo, ajusta según necesites
+        spawnPlayer.add(new Vector2(40, 50)); // Coordenadas de ejemplo, ajusta según necesites
 
         idTargetMaxScore = -1;
 
@@ -226,6 +238,7 @@ public class GameScreen extends UIScreen {
             //gameLayerManager.setVisible(false);
             isLoad = true;
         }
+        spawnBasicEnemyNearPlayer();
     }
 
     /**
@@ -360,4 +373,165 @@ public class GameScreen extends UIScreen {
         @Override public void preSolve(Contact contact, Manifold oldManifold) {}
         @Override public void postSolve(Contact contact, ContactImpulse impulse) {}
     }
+
+    private void createEntityLogic(Entity.Type type, Vector2 position, Vector2 force, Integer id, Boolean flipX){
+        if (entities.get(id) != null) {
+            System.out.println(ConsoleColor.RED + "Entity " + type + ":" + id + " ya existe en la lista" + ConsoleColor.RESET);
+            return;
+        }
+        //System.out.println("Creando Entidad " + id + " Tipo: " + type);
+        threadSecureWorld.addModification(() -> {
+            Entity newEntity = entityFactory.create(type, world, position, id);
+            newEntity.setFlipX(flipX);
+            newEntity.getBody().applyLinearImpulse(force, newEntity.getBody().getWorldCenter(), true);
+            addActor(newEntity);
+        });
+    }
+
+    public void addEntityNoPacket(Entity.Type type, Vector2 position, Vector2 force, Integer id, Boolean flipX){
+        createEntityLogic(type, position, force, id, flipX);
+        main.setIds(id);
+    }
+    public void addEntityNoPacket(Entity.Type type, Vector2 position, Vector2 force, Boolean flipX){
+        int id = main.getIds();
+        createEntityLogic(type, position, force, id, flipX);
+    }
+
+    public void addEntity(Entity.Type type, Vector2 position, Vector2 force, Boolean flipX){
+        int id = main.getIds();
+        createEntityLogic(type, position, force, id, flipX);
+
+    }
+    public void addEntity(Entity.Type type, Vector2 position, Vector2 force){
+        addEntity(type, position, force, false);
+    }
+
+    public void addEntitySpawn(Entity.Type type, Vector2 force, SpawnManager spawnManager){
+        int id = main.getIds();
+        Vector2 position = spawnManager.takeSpawnPoint(id);
+        createEntityLogic(type, position, force, id, false);
+
+    }
+
+    public void actEntityPos(Integer id, Float x, Float y, Float fx, Float fy){
+        Entity entity = entities.get(id);
+        if (entity == null) {
+            System.err.println("Entity " + id + " no encontrada en la lista para cambiar su posicion");
+            return;
+        }
+        Body body = entity.getBody();
+        threadSecureWorld.addModification(() -> {
+            body.setTransform(x, y, 0);
+            body.setLinearVelocity(fx, fy);
+        });
+    }
+
+    public void addEntity(Entity entity) {
+        entities.put(entity.getId(), entity); // Añade la entidad al mapa.
+        stage.addActor(entity); // Añade la entidad como actor al Stage.
+    }
+
+    public void actEnemy(Integer id, Enemy.StateType state, Float cronno, Boolean flipX){
+        Enemy enemy = (Enemy) entities.get(id);
+        if (enemy == null) {
+            System.out.println("Entity " + id + " no encontrada en la lista");
+            return;
+        }
+        if (enemy.getCurrentStateType() == Enemy.StateType.ATTACK) return;
+        enemy.setState(state);
+        enemy.setFlipX(flipX);
+        enemy.setActCrono(cronno);
+    }
+
+    public void actDamageEnemy(Integer receiverId, Body attacker, Integer damage, Float knockback) {
+        if (!entities.containsKey(receiverId)) {
+            System.out.println("Entity " + receiverId + " no encontrada en la lista para actualizar dano");
+            return;
+        }
+        Body receiver = entities.get(receiverId).getBody();
+        Vector2 pushDirection = attacker.getPosition().cpy().sub(receiver.getPosition()).nor();
+
+        actDamageEnemyNoPacket(receiverId, damage, pushDirection.x, pushDirection.y, knockback);
+
+
+    }
+
+    public void removeEntityNoPacket(Integer id){
+        threadSecureWorld.addModification(() -> {
+            Entity entity = entities.get(id);
+            if (entity == null) {
+                System.out.println(ConsoleColor.RED + "Entity " + id + " no se pudo eliminar ,no encontrada en la lista" + ConsoleColor.RESET);
+                return;
+            }
+            entities.remove(entity.getId());
+            actors.remove(entity);
+            removeActor(entity);
+            entity.detach();
+        });
+    }
+
+    public void removeEntity(Integer id){
+        removeEntityNoPacket(id);
+    }
+
+    public void removeActor(Actor actor){
+        stage.getActors().removeValue(actor, true);
+    }
+
+    public void actDamageEnemyNoPacket(Integer id, Integer damage, Float forceX, Float forceY, Float knockback){
+        if (!entities.containsKey(id)) {
+            System.out.println("Entity " + id + " no encontrada en la lista para actualizar dano");
+            return;
+        }
+        Enemy enemy = (Enemy) entities.get(id);
+        if (enemy.getCurrentStateType() == Enemy.StateType.DAMAGE) return;
+        threadSecureWorld.addModification(() -> {
+            enemy.takeDamage(damage);
+            enemy.getBody().setLinearVelocity(0,0);
+            enemy.getBody().applyLinearImpulse(forceX* -knockback, forceY* -knockback, enemy.getBody().getWorldCenter().x, enemy.getBody().getWorldCenter().y, true);
+            enemy.getBody().applyLinearImpulse(0,knockback, enemy.getBody().getWorldCenter().x, enemy.getBody().getWorldCenter().y, true);
+        });
+    }
+
+    public void spawnBasicEnemyNearPlayer() {
+        // Asegúrate de que el jugador y el mundo de Box2D existan
+        if (player == null || world == null) {
+            System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
+            return;
+        }
+
+        // Obtener la posición actual del jugador
+        Vector2 playerPosition = player.getBody().getPosition();
+
+        // Calcular una posición para el enemigo cerca del jugador
+        // Por ejemplo, 3 unidades a la derecha y en la misma altura.
+        Vector2 spawnPosition = new Vector2(playerPosition.x + 3f, playerPosition.y);
+
+        // Generar un ID único para el nuevo enemigo
+        Integer newEnemyId = getNextEntityId(); // Utiliza el método para obtener un ID único
+
+        // Crear el enemigo usando la EntityFactory
+        Entity enemy = entityFactory.create(Entity.Type.BASIC, world, spawnPosition, newEnemyId);
+
+        if (enemy != null) {
+            // Añadir el enemigo a la GameScreen
+            addEntity(enemy);
+            System.out.println("Enemigo BasicEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
+        } else {
+            System.out.println("Error: No se pudo crear el BasicEnemy.");
+        }
+    }
+
+    /**
+     * Método para obtener un ID único para una nueva entidad.
+     * Incrementa el contador y lo devuelve.
+     */
+    private int getNextEntityId() {
+        return nextEntityId++;
+    }
+
+
+
+
+
 }
