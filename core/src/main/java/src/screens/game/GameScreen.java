@@ -239,6 +239,7 @@ public class GameScreen extends UIScreen {
             isLoad = true;
         }
         spawnBasicEnemyNearPlayer();
+        spawnThrowerEnemyNearPlayer();
     }
 
     /**
@@ -522,6 +523,35 @@ public class GameScreen extends UIScreen {
         }
     }
 
+    public void spawnThrowerEnemyNearPlayer() {
+        // Asegúrate de que el jugador y el mundo de Box2D existan
+        if (player == null || world == null) {
+            System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
+            return;
+        }
+
+        // Obtener la posición actual del jugador
+        Vector2 playerPosition = player.getBody().getPosition();
+
+        // Calcular una posición para el enemigo cerca del jugador
+        // Por ejemplo, 3 unidades a la derecha y en la misma altura.
+        Vector2 spawnPosition = new Vector2(playerPosition.x - 3f, playerPosition.y);
+
+        // Generar un ID único para el nuevo enemigo
+        Integer newEnemyId = getNextEntityId(); // Utiliza el método para obtener un ID único
+
+        // Crear el enemigo usando la EntityFactory
+        Entity enemy = entityFactory.create(Entity.Type.THROWER, world, spawnPosition, newEnemyId);
+
+        if (enemy != null) {
+            // Añadir el enemigo a la GameScreen
+            addEntity(enemy);
+            System.out.println("Enemigo BasicEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
+        } else {
+            System.out.println("Error: No se pudo crear el BasicEnemy.");
+        }
+    }
+
     /**
      * Método para obtener un ID único para una nueva entidad.
      * Incrementa el contador y lo devuelve.
@@ -529,6 +559,8 @@ public class GameScreen extends UIScreen {
     private int getNextEntityId() {
         return nextEntityId++;
     }
+
+
 
 
 

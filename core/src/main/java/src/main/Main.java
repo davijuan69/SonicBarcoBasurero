@@ -68,6 +68,7 @@ public class Main extends Game {
     public void create() {
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         playerColor = new Color(Color.WHITE);
+        ids = new AtomicInteger(0);
 
         // ¡IMPORTANTE! Cargar activos ANTES de inicializar pantallas que los usan.
         initAssets();
@@ -119,7 +120,8 @@ public class Main extends Game {
         assetManager.load("world/entities/Sonic/Sonic_idle.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_bolita.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_cayendo.png", Texture.class);
-
+        assetManager.load("world/entities/Enemigos/enemigo3.png", Texture.class);
+        assetManager.load("world/entities/Objetos/basura2.png", Texture.class);
 
 
 

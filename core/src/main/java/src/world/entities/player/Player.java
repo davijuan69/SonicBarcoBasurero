@@ -22,6 +22,7 @@ import src.utils.sound.SingleSoundManager;
 import src.utils.sound.SoundManager;
 import src.world.ActorBox2d;
 import src.world.entities.Entity;
+import src.world.entities.enemies.Enemy;
 import src.world.entities.player.states.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -236,6 +237,30 @@ public class Player extends PlayerCommon {
         if (!Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT)) {
             body.applyForce(-velocity.x * brakeForce * delta, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
         }
+    }
+    public void beginContactWith(ActorBox2d actor, GameScreen game) {
+        if (actor instanceof Enemy enemy) {
+            if (getCurrentStateType() == StateType.FALL){
+                game.removeEntity(enemy.getId());
+                setCurrentState(Player.StateType.IDLE);
+                return;
+            }
+            if (getCurrentStateType() == StateType.DASH && enemy.getCurrentStateType() != Enemy.StateType.DAMAGE) {
+                Box2dUtils.knockbackBody(body, enemy.getBody(), 5f);
+                game.actDamageEnemy(enemy.getId(), body, dashDamage, 2f);
+                setInvencible(0.5f);
+                setCurrentState(StateType.FALL);
+                return;
+            }
+
+            if (getCurrentStateType() == StateType.STUN || invencible || enemy.getCurrentStateType() == Enemy.StateType.DAMAGE)
+                return;
+            setCurrentState(Player.StateType.STUN);
+            Box2dUtils.knockbackBody(body, enemy.getBody(), 10f);
+            setCurrentState(StateType.FALL);
+
+        }
+
     }
 }
 

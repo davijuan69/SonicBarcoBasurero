@@ -9,6 +9,8 @@ public class Entity extends ActorBox2dSprite{
 
     public enum Type {
         BASIC, //enemigo basico
+        THROWER,
+        TRASH,
         RING, // moneda del juego
         CHECKPOINT,
 
