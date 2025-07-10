@@ -238,7 +238,10 @@ public class Player extends PlayerCommon {
         Vector2 velocity = body.getLinearVelocity();
         if (getCurrentStateType() == StateType.DASH || getCurrentStateType() == StateType.STUN) return;
         if (!Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT)) {
-            body.applyForce(-velocity.x * brakeForce * delta, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
+            // No frenar si está en animación MAXSPEED o si la velocidad es mayor a 5.5f
+            if (getCurrentAnimationType() != AnimationType.MAXSPEED && Math.abs(velocity.x) < 5.5f) {
+                body.applyForce(-velocity.x * brakeForce * delta, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
+            }
         }
     }
     public void beginContactWith(ActorBox2d actor, GameScreen game) {

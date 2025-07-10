@@ -12,7 +12,7 @@ public class Constants {
      * Es crucial para sistemas de física que operan en metros (como Box2D) y la renderización
      * que se realiza en píxeles. Un valor de `48f` significa que 48 píxeles equivalen a 1 metro.
      */
-    public static final float PIXELS_IN_METER = 48f;
+    public static final float PIXELS_IN_METER = 16f;
 
     /**
      * El número de anillos (RINGS) que están disponibles o se requieren por juego.

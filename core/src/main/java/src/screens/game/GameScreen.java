@@ -40,6 +40,7 @@ import src.world.entities.player.PlayerCommon;
 import src.world.entities.Entity;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import src.utils.managers.TiledManager;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 import java.util.ArrayList;
@@ -114,13 +115,13 @@ public class GameScreen extends UIScreen {
         this.entityFactory = new EntityFactory(this); // Inicializa la fábrica de entidades
 
 
-        stage = new Stage(new ScreenViewport());
+        stage = new Stage(new FitViewport(480, 270));
         world = new World(new Vector2(0, -30f), true); // Gravedad descendente.
         threadSecureWorld = new ThreadSecureWorld(world);
         world.setContactListener(new GameContactListener(this));
 
         tiledManager = new TiledManager(this);
-        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic.tmx");
+        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa sonic.tmx");
 
         world.setContactListener(new GameContactListener(this));
         lastPosition = new Vector2();

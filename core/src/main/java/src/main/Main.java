@@ -113,10 +113,10 @@ public class Main extends Game {
         assetManager.load("world/entities/Sonic/Sonic_Inactivo.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr1.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr2.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/Cave.png", Texture.class);
+        //assetManager.load("tiled/maps/tiledSets/Cave.png", Texture.class);
         assetManager.load("tiled/maps/tiledSets/greenhillprestado.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/GreenHill.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/otros.png", Texture.class);
+        //assetManager.load("tiled/maps/tiledSets/GreenHill.png", Texture.class);
+        //assetManager.load("tiled/maps/tiledSets/otros.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr3.png", Texture.class);
         assetManager.load("world/entities/Enemigos/enemigo1.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_idle.png", Texture.class);
@@ -124,7 +124,10 @@ public class Main extends Game {
         assetManager.load("world/entities/Sonic/Sonic_cayendo.png", Texture.class);
         assetManager.load("world/entities/Enemigos/enemigo3.png", Texture.class);
         assetManager.load("world/entities/Objetos/basura2.png", Texture.class);
-
+        assetManager.load("tiled/maps/tiledSets/16x16Tiles.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/BG Cave 1.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/Game Boy Advance - Sonic the Hedgehog Genesis - Green Hill Zone.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/Mobile - Sonic the Hedgehog Part 1 & 2 - Green Hill Zone.png", Texture.class);
 
 
 

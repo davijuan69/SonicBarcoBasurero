@@ -41,13 +41,35 @@ public class TiledManager {
      * @return Un `OrthogonalTiledMapRenderer` configurado para dibujar el mapa.
      */
     public OrthogonalTiledMapRenderer setupMap(String map) {
+        System.out.println("[DEBUG] Cargando mapa: " + map);
         tiledmap = new TmxMapLoader().load(map); // Carga el archivo .tmx en un objeto TiledMap.
         // Obtiene el tamaño del tile (ancho/alto) de las propiedades del mapa.
         tiledSize = tiledmap.getProperties().get("tilewidth", Integer.class);
+        System.out.println("[DEBUG] Tamaño de tile: " + tiledSize);
 
-        // Retorna un renderizador que escala el mapa de píxeles del tile a las unidades de mundo
-        // definidas por PIXELS_IN_METER.
-        return new OrthogonalTiledMapRenderer(tiledmap, PIXELS_IN_METER/tiledSize);
+        System.out.println("[DEBUG] Tilesets encontrados:");
+        for (com.badlogic.gdx.maps.tiled.TiledMapTileSet tileset : tiledmap.getTileSets()) {
+            System.out.println("[DEBUG] - Tileset: " + tileset.getName() + " con " + tileset.size() + " tiles");
+        }
+
+        // Fuerza el filtro de textura a Nearest para todos los tilesets
+        for (com.badlogic.gdx.maps.tiled.TiledMapTileSet tileset : tiledmap.getTileSets()) {
+            for (com.badlogic.gdx.maps.tiled.TiledMapTile tile : tileset) {
+                if (tile instanceof com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile) {
+                    com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile staticTile = (com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile) tile;
+                    com.badlogic.gdx.graphics.Texture texture = staticTile.getTextureRegion().getTexture();
+                    texture.setFilter(com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest, com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest);
+                }
+            }
+        }
+
+        System.out.println("[DEBUG] Capas encontradas:");
+        for (com.badlogic.gdx.maps.MapLayer layer : tiledmap.getLayers()) {
+            System.out.println("[DEBUG] - Capa: " + layer.getName() + " (tipo: " + layer.getClass().getSimpleName() + ")");
+        }
+
+        // Retorna un renderizador que escala el mapa sin escalado (1f)
+        return new OrthogonalTiledMapRenderer(tiledmap, 1f);
     }
 
     /**
@@ -63,7 +85,7 @@ public class TiledManager {
                 float[] vertices = polygon.getTransformedVertices();
                 int numVerts = vertices.length / 2;
                 if (numVerts < 3 || numVerts > 8) {
-                    System.out.println("[WARN] Polígono ignorado por tener " + numVerts + " vértices (Box2D solo acepta 3-8)");
+                    //System.out.println("[WARN] Polígono ignorado por tener " + numVerts + " vértices (Box2D solo acepta 3-8)");
                     continue;
                 }
                 // Verificar vértices repetidos o lados muy pequeños
@@ -75,7 +97,7 @@ public class TiledManager {
                     float y2 = vertices[2*((i+1)%numVerts)+1];
                     float dist = (float)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1));
                     if (dist < 1e-2) {
-                        System.out.println("[WARN] Polígono ignorado por vértices muy juntos o repetidos: " + x1 + "," + y1 + " <-> " + x2 + "," + y2);
+                        //System.out.println("[WARN] Polígono ignorado por vértices muy juntos o repetidos: " + x1 + "," + y1 + " <-> " + x2 + "," + y2);
                         valido = false;
                         break;
                     }
@@ -204,8 +226,8 @@ public class TiledManager {
      */
     public void makeMap() {
         // parsedPlayer(tiledmap.getLayers().get("playerSpawn").getObjects()); // Procesa la capa de aparición del jugador.
-        parsedStaticMap(tiledmap.getLayers().get("colisiones_suelo").getObjects()); // Procesa la capa de colisiones de suelo.
-        parsedStaticMap(tiledmap.getLayers().get("colisiones_techo_y_puas_del_tunel").getObjects()); // Procesa la capa de colisiones de techo y puas.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones suelo").getObjects()); // Procesa la capa de colisiones de suelo.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones techo y puas del tunel").getObjects()); // Procesa la capa de colisiones de techo y puas.
         // parsedSpawnMap(tiledmap.getLayers().get("spawn").getObjects()); // Procesa la capa de puntos de aparición.
     }
 
