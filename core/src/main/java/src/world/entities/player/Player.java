@@ -23,6 +23,9 @@ import src.utils.sound.SoundManager;
 import src.world.ActorBox2d;
 import src.world.entities.Entity;
 import src.world.entities.enemies.Enemy;
+import src.world.entities.items.Item;
+import src.world.entities.items.Mount;
+import src.world.entities.items.Rings;
 import src.world.entities.player.states.*;
 import java.util.ArrayList;
 import java.util.Random;
@@ -240,7 +243,8 @@ public class Player extends PlayerCommon {
     }
     public void beginContactWith(ActorBox2d actor, GameScreen game) {
         if (actor instanceof Enemy enemy) {
-            if (getCurrentStateType() == StateType.FALL){
+            if (getCurrentStateType() == StateType.FALL) {
+                enemy.throwEntity(Type.RING,0f,2f);
                 game.removeEntity(enemy.getId());
                 setCurrentState(Player.StateType.IDLE);
                 return;
@@ -259,8 +263,13 @@ public class Player extends PlayerCommon {
             Box2dUtils.knockbackBody(body, enemy.getBody(), 10f);
             setCurrentState(StateType.FALL);
 
+        } else if (actor instanceof Rings coin) {
+            coin.despawn();
         }
-
+        else if(actor instanceof Mount mount){
+            mount.throwEntity(Type.RING, 0f,4f);
+            mount.despawn();
+        }
     }
 }
 

@@ -11,6 +11,7 @@ public class Entity extends ActorBox2dSprite{
         BASIC, //enemigo basico
         THROWER,
         TRASH,
+        MOUNT,
         RING, // moneda del juego
         CHECKPOINT,
 

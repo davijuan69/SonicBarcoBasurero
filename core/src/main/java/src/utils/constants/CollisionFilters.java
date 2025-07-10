@@ -33,7 +33,7 @@ public class CollisionFilters {
      * Filtro de colisión para **ítems** que pueden ser recolectados o interactuados.
      * Representado por el bit 4 (0000 0000 0001 0000 en binario).
      */
-    public static final short ITEM = Byte.parseByte("10000", 2);
+    public static final short ITEM = Byte.parseByte("100", 2);
     /**
      * Filtro de colisión para **proyectiles** (por ejemplo, balas, flechas).
      * Representado por el bit 5 (0000 0000 0010 0000 en binario).

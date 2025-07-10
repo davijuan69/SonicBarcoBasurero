@@ -8,6 +8,8 @@ import com.sun.jdi.Mirror;
 import src.screens.game.GameScreen;
 import src.world.entities.enemies.Throw.ThrowEnemy;
 import src.world.entities.enemies.basic.BasicEnemy;
+import src.world.entities.items.Mount;
+import src.world.entities.items.Rings;
 import src.world.entities.proyectiles.TrashProyectil;
 
 // Define una clase de fábrica responsable de crear diferentes tipos de entidades de juego.
@@ -44,6 +46,10 @@ public class EntityFactory {
             case THROWER -> new ThrowEnemy(world,new Rectangle(position.x, position.y, 1.5f, 1.5f), assetManager, id, game);
 
             case TRASH -> new TrashProyectil(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
+
+            case MOUNT -> new Mount(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
+
+            case RING -> new Rings(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
 
             default -> null;
         };
