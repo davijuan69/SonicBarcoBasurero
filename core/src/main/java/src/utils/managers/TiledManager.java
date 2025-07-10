@@ -226,8 +226,8 @@ public class TiledManager {
      */
     public void makeMap() {
         // parsedPlayer(tiledmap.getLayers().get("playerSpawn").getObjects()); // Procesa la capa de aparición del jugador.
-        parsedStaticMap(tiledmap.getLayers().get("colisiones suelo").getObjects()); // Procesa la capa de colisiones de suelo.
-        parsedStaticMap(tiledmap.getLayers().get("colisiones techo y puas del tunel").getObjects()); // Procesa la capa de colisiones de techo y puas.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones_suelo").getObjects()); // Procesa la capa de colisiones de suelo.
+        parsedStaticMap(tiledmap.getLayers().get("colisiones_techo_y_puas_del_tunel").getObjects()); // Procesa la capa de colisiones de techo y puas.
         // parsedSpawnMap(tiledmap.getLayers().get("spawn").getObjects()); // Procesa la capa de puntos de aparición.
     }
 
