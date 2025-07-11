@@ -125,9 +125,9 @@ public class Main extends Game {
         assetManager.load("world/entities/Enemigos/enemigo3.png", Texture.class);
         assetManager.load("world/entities/Objetos/basura2.png", Texture.class);
         assetManager.load("tiled/maps/tiledSets/16x16Tiles.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/BG Cave 1.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/Game Boy Advance - Sonic the Hedgehog Genesis - Green Hill Zone.png", Texture.class);
-        assetManager.load("tiled/maps/tiledSets/Mobile - Sonic the Hedgehog Part 1 & 2 - Green Hill Zone.png", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/FONDO.jpeg", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/FONDO CUEVA.jpeg", Texture.class);
+        assetManager.load("tiled/maps/tiledSets/mapa sanic.jpg", Texture.class);
 
 
 
