@@ -243,6 +243,7 @@ public class GameScreen extends UIScreen {
         spawnThrowerEnemyNearPlayer();
         spawnTrashNearPlayer();
         spawnEggmanPlayer();
+        spawnThrowerEnemyUnderPlayer();
     }
 
     /**
@@ -554,37 +555,61 @@ public class GameScreen extends UIScreen {
     }
 
     public void spawnTrashNearPlayer() {
-        // Asegúrate de que el jugador y el mundo de Box2D existan
         if (player == null || world == null) {
             System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
             return;
         }
 
-        // Obtener la posición actual del jugador
-        Vector2 playerPosition = player.getBody().getPosition();
+        Random random = new Random();
 
-        // Calcular una posición para el enemigo cerca del jugador
-        // Por ejemplo, 3 unidades a la derecha y en la misma altura.
-        Vector2 spawnPosition = new Vector2(playerPosition.x + 4f, playerPosition.y);
+        for (int i = 0; i < 10; i++) { // Bucle para generar 10 enemigos
+            Vector2 playerPosition = player.getBody().getPosition();
+            // Calcula una posición aleatoria cerca del jugador
+            float offsetX = 3f + (random.nextFloat() * 10f - 2.5f);
+            float offsetY = random.nextFloat() * 2f - 1f; // Pequeña variación en Y
 
+            Vector2 spawnPosition = new Vector2(playerPosition.x + offsetX, playerPosition.y + offsetY);
 
-        Integer newEnemyId = getNextEntityId(); // Utiliza el método para obtener un ID único
+            Integer newEnemyId = getNextEntityId();
+            Entity enemy = entityFactory.create(Entity.Type.MOUNT, world, spawnPosition, newEnemyId);
 
-
-        Entity mount = entityFactory.create(Entity.Type.MOUNT, world, spawnPosition, newEnemyId);
-
-        if (mount != null) {
-            // Añadir el enemigo a la GameScreen
-            addEntity(mount);
-            spawnPosition = new Vector2(playerPosition.x + -4f, playerPosition.y);
-            newEnemyId = getNextEntityId(); // Utiliza el método para obtener un ID único
-            mount = entityFactory.create(Entity.Type.MOUNT, world, spawnPosition, newEnemyId);
-
-            System.out.println("Enemigo BasicEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
-        } else {
-            System.out.println("Error: No se pudo crear el BasicEnemy.");
+            if (enemy != null) {
+                addEntity(enemy);
+                System.out.println("Enemigo ThrowerEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
+            } else {
+                System.out.println("Error: No se pudo crear el ThrowerEnemy.");
+            }
         }
     }
+
+    public void spawnThrowerEnemyUnderPlayer() {
+        if (player == null || world == null) {
+            System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
+            return;
+        }
+
+        Random random = new Random();
+
+        for (int i = 0; i < 20; i++) { // Bucle para generar 10 enemigos
+            Vector2 playerPosition = player.getBody().getPosition();
+            // Calcula una posición aleatoria cerca del jugador
+            float offsetX = 3f - (random.nextFloat() * 100f - 2.5f); // Entre -0.5 y -5.5 unidades a la izquierda
+            float offsetY = 50f; // Pequeña variación en Y
+
+            Vector2 spawnPosition = new Vector2(playerPosition.x + offsetX, playerPosition.y - offsetY);
+
+            Integer newEnemyId = getNextEntityId();
+            Entity enemy = entityFactory.create(Entity.Type.THROWER, world, spawnPosition, newEnemyId);
+
+            if (enemy != null) {
+                addEntity(enemy);
+                System.out.println("Enemigo ThrowerEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
+            } else {
+                System.out.println("Error: No se pudo crear el ThrowerEnemy.");
+            }
+        }
+    }
+
 
     public void spawnEggmanPlayer() {
         // Asegúrate de que el jugador y el mundo de Box2D existan
