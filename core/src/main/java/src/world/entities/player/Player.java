@@ -23,6 +23,7 @@ import src.utils.sound.SoundManager;
 import src.world.ActorBox2d;
 import src.world.entities.Entity;
 import src.world.entities.enemies.Enemy;
+import src.world.entities.enemies.Eggman.Eggman;
 import src.world.entities.items.Item;
 import src.world.entities.items.Mount;
 import src.world.entities.items.Rings;
@@ -38,7 +39,6 @@ public class Player extends PlayerCommon {
     // Pantalla principal del juego que gestiona este jugador
     public final GameScreen game;
 
-    // Color del jugador (visual)
     private final Color color;
     private Float invencibleTime; // Tiempo restante de invencibilidad
     private Boolean invencible;   // Si el jugador es invencible
@@ -246,7 +246,12 @@ public class Player extends PlayerCommon {
     }
     public void beginContactWith(ActorBox2d actor, GameScreen game) {
         if (actor instanceof Enemy enemy) {
-            if (getCurrentStateType() == StateType.FALL) {
+            if((getCurrentStateType() == StateType.FALL) && (enemy instanceof Eggman)){
+                Box2dUtils.knockbackBody(body, enemy.getBody(), 5f);
+                enemy.takeDamage(1);
+                enemy.setState(Enemy.StateType.DAMAGE);
+            }
+            else if (getCurrentStateType() == StateType.FALL) {
                 enemy.throwEntity(Type.RING,0f,2f);
                 game.removeEntity(enemy.getId());
                 setCurrentState(Player.StateType.IDLE);
@@ -275,144 +280,4 @@ public class Player extends PlayerCommon {
         }
     }
 }
-
-    /**
-     * Reduce puntos al jugador (en forma de monedas) y lanza dichas monedas.
-     * @param amount Cantidad de puntos a perder
-     */
-
-    /**
-     * Elimina el poder actual y lo lanza al mundo como entidad.
-     */
-//    public void dropPower(){
-//        if (currentpowerUptype == PowerUp.Type.NONE) return;
-//        switch (currentpowerUptype){
-//            case BOMB -> game.addEntity(Type.POWERBOMB, body.getPosition(), new Vector2(random.nextFloat(-3,3),random.nextFloat(-5,5)));
-//            case WHEEL -> game.addEntity(Type.POWERWHEEL, body.getPosition(), new Vector2(random.nextFloat(-3,3),random.nextFloat(-5,5)));
-//            case SWORD -> game.addEntity(Type.POWERSWORD, body.getPosition(), new Vector2(random.nextFloat(-3,3),random.nextFloat(-5,5)));
-//        }
-//        setCurrentPowerUp(PowerUp.Type.NONE);
-//    }
-
-    /**
-     * Ejecuta la acción principal del jugador dependiendo del estado o poder.
-     */
-//    public void doAction(){
-//        if (currentpowerUptype != PowerUp.Type.NONE) {
-//            PowerUp power = getCurrentPowerUp();
-//            if (getCurrentStateType() == StateType.IDLE || getCurrentStateType() == StateType.WALK ) power.actionIdle();
-//            else if (getCurrentStateType() == StateType.RUN) power.actionMove();
-//            else if (getCurrentStateType() == StateType.JUMP || getCurrentStateType() == StateType.FALL) power.actionAir();
-//        }
-//        else if (powerAbsorded == null) setCurrentState(Player.StateType.ABSORB);
-//        else setCurrentState(Player.StateType.STAR);
-//    }
-
-    /**
-     * Lanza una entidad desde la posición del jugador con una fuerza en X e Y.
-     * @param type Tipo de entidad a lanzar
-     * @param impulseX Velocidad en X
-     * @param impulseY Velocidad en Y
-     */
-//    public void throwEntity(Entity.Type type, Float impulseX, Float impulseY){
-//        float linearX = Math.abs(body.getLinearVelocity().x);
-//        game.addEntity(type,
-//            new Vector2( body.getPosition().add(isFlipX() ? -2.2f : 1.2f,-0.5f)),
-//            new Vector2((isFlipX() ? -impulseX - linearX : impulseX + linearX),impulseY),
-//            isFlipX()
-//        );
-//    }
-
-    /**
-     * Lanza una entidad en la dirección especificada con fuerza determinada.
-     * @param type Tipo de entidad
-     * @param impulse Magnitud de impulso
-     * @param direction Dirección de lanzamiento
-     */
-//    public void throwEntity(Entity.Type type, Float impulse, ThrowDirection direction){
-//        float linearX = Math.abs(body.getLinearVelocity().x);
-//        Vector2 spawnPos = new Vector2( switch (direction) {
-//            case LEFT -> body.getPosition().add(-2.2f,-0.5f);
-//            case RIGHT -> body.getPosition().add(1.2f,-0.5f);
-//            case UP -> body.getPosition().add(0,1.7f);
-//            case DOWN -> body.getPosition().add(0,-1.7f);
-//        });
-//        Vector2 impulseVector = switch (direction) {
-//            case LEFT -> new Vector2(-impulse + linearX,0);
-//            case RIGHT -> new Vector2(impulse + linearX,0);
-//            case UP -> new Vector2(0,impulse);
-//            case DOWN -> new Vector2(0,-impulse);
-//        };
-//        game.addEntity(type,
-//            spawnPos,
-//            impulseVector,
-//            direction == ThrowDirection.LEFT
-//        );
-//    }
-
-    /**
-     * Lógica de colisión con otros actores del mundo.
-     * @param actor Actor con el que colisiona
-     * @param game Pantalla actual del juego
-     */
-//    @Override
-//    public void beginContactWith(ActorBox2d actor, GameScreen game) {
-//        if (actor instanceof Enemy enemy) {
-//            if (getCurrentStateType() == StateType.ABSORB){
-//                powerAbsorded = enemy.getPowerType();
-//                game.removeEntity(enemy.getId());
-//                setCurrentState(Player.StateType.IDLE);
-//                return;
-//            }
-//
-//            if (getCurrentStateType() == StateType.DASH && enemy.getCurrentStateType() != Enemy.StateType.DAMAGE){
-//                Box2dUtils.knockbackBody(body, enemy.getBody(), 5f);
-//                game.actDamageEnemy(enemy.getId(), body, dashDamage, 2f);
-//                setInvencible(0.5f);
-//                setCurrentState(StateType.FALL);
-//                return;
-//            }
-//
-//            if (getCurrentStateType() == StateType.STUN || invencible || enemy.getCurrentStateType() == Enemy.StateType.DAMAGE) return;
-//            setCurrentState(Player.StateType.STUN);
-//            playSound(SoundType.NORMALDAMAGE);
-//            Box2dUtils.knockbackBody(body, enemy.getBody(), 10f);
-//
-//        } else if (actor instanceof Mirror m) {
-//            game.threadSecureWorld.addModification(() -> {
-//                game.playMinigame();
-//                game.randomMirror(m.getId());
-//            });
-//        } else if (actor instanceof PowerItem power){
-//            if (getCurrentStateType() == StateType.STUN || invencible || getCurrentStateType() != StateType.ABSORB) return;
-//            powerAbsorded = power.getPowerType();
-//            setCurrentState(Player.StateType.IDLE);
-//            power.despawn();
-//        } else if (actor instanceof CoinOdsPoint coin){
-//            if (getCurrentStateType() == StateType.STUN || invencible) return;
-//            playSound(SoundType.COIN);
-//            coin.despawn();
-//            game.setScore(game.getScore() + 1);
-//        } else if (actor instanceof Spike spike) {
-//            if (getCurrentStateType() == StateType.STUN || invencible) return;
-//            stunTime = 0.5f;
-//            setCurrentState(Player.StateType.STUN);
-//            playSound(SoundType.NORMALDAMAGE);
-//            Box2dUtils.knockbackBody(body, spike.getBody(), 10f);
-//        } else if (actor instanceof Lava lava) {
-//            if (getCurrentStateType() == StateType.STUN || invencible) return;
-//            stunTime = 0.5f;
-//            setCurrentState(Player.StateType.STUN);
-//            playSound(SoundType.FIREDAMAGE);
-//            Box2dUtils.knockbackBody(body, lava.getBody(), 10f);
-//        }else if (actor instanceof OtherPlayer other){
-//            if (getCurrentStateType() == StateType.STUN || invencible || other.getCurrentStateType() != StateType.DASH) return;
-//            setCurrentState(Player.StateType.STUN);
-//            Box2dUtils.knockbackBody(body, other.getBody(), 10f);
-//        }
-//    }
-//
-//}
-
-
 

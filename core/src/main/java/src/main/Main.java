@@ -128,6 +128,12 @@ public class Main extends Game {
         assetManager.load("tiled/maps/tiledSets/FONDO.jpeg", Texture.class);
         assetManager.load("tiled/maps/tiledSets/FONDO CUEVA.jpeg", Texture.class);
         assetManager.load("tiled/maps/tiledSets/mapa sanic.jpg", Texture.class);
+        assetManager.load("world/entities/Enemigos/eggman/eggman_idle.png", Texture.class);
+        assetManager.load("world/entities/Enemigos/eggman/eggman_molesto.png", Texture.class);
+        assetManager.load("world/entities/Enemigos/eggman/eggman_perdiendo.png", Texture.class);
+        assetManager.load("world/entities/Enemigos/eggman/eggman_morado.png", Texture.class);
+        assetManager.load("world/entities/Objetos/explosion.png", Texture.class);
+
 
 
 

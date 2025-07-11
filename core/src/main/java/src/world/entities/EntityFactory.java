@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.sun.jdi.Mirror;
 import src.screens.game.GameScreen;
+import src.world.entities.enemies.Eggman.Eggman;
 import src.world.entities.enemies.Throw.ThrowEnemy;
 import src.world.entities.enemies.basic.BasicEnemy;
 import src.world.entities.items.Mount;
@@ -50,6 +51,8 @@ public class EntityFactory {
             case MOUNT -> new Mount(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
 
             case RING -> new Rings(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
+
+            case EGGMAN -> new Eggman(world, new Rectangle(position.x, position.y, 3f, 3f), assetManager, id, game);
 
             default -> null;
         };
