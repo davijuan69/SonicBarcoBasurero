@@ -244,6 +244,7 @@ public class GameScreen extends UIScreen {
         spawnTrashNearPlayer();
         spawnTrashUnderPlayer();
         spawnTrowerUnderPlayer();
+        spawnEggmanPlayer();
     }
 
     /**
@@ -630,6 +631,30 @@ public class GameScreen extends UIScreen {
                 System.out.println("Error: No se pudo crear el ThrowerEnemy.");
             }
         }
+    }
+
+    public void spawnEggmanPlayer() {
+        if (player == null || world == null) {
+            System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
+            return;
+        }
+        Vector2 playerPosition = player.getBody().getPosition();
+        // Calcula una posición aleatoria cerca del jugador
+        float offsetX = 500f; // Entre -0.5 y -5.5 unidades a la izquierda
+        float offsetY = 10f; // Pequeña variación en Y
+
+            Vector2 spawnPosition = new Vector2(playerPosition.x + offsetX, playerPosition.y - offsetY);
+
+            Integer newEnemyId = getNextEntityId();
+            Entity enemy = entityFactory.create(Entity.Type.THROWER, world, spawnPosition, newEnemyId);
+
+            if (enemy != null) {
+                addEntity(enemy);
+                System.out.println("Enemigo ThrowerEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
+            } else {
+                System.out.println("Error: No se pudo crear el ThrowerEnemy.");
+            }
+
     }
 
 
