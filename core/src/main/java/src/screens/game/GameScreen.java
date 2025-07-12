@@ -121,7 +121,7 @@ public class GameScreen extends UIScreen {
         world.setContactListener(new GameContactListener(this));
 
         tiledManager = new TiledManager(this);
-        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic (2).tmx");
+        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic (3).tmx");
 
         world.setContactListener(new GameContactListener(this));
         lastPosition = new Vector2();
