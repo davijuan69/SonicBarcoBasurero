@@ -123,7 +123,7 @@ public class GameScreen extends UIScreen {
         world.setContactListener(new GameContactListener(this));
 
         tiledManager = new TiledManager(this);
-        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic (3).tmx");
+        tiledRenderer = tiledManager.setupMap("tiled/maps/mapa_sonic (1).tmx");
 
         world.setContactListener(new GameContactListener(this));
         lastPosition = new Vector2();
@@ -256,6 +256,12 @@ public class GameScreen extends UIScreen {
 //        timeGame.update(delta);
         stage.act();
         threadSecureWorld.step(delta, 6, 2);
+
+        // Mostrar coordenadas del jugador en todo momento
+        if (player != null) {
+            Vector2 playerPosition = player.getBody().getPosition();
+            System.out.println("Jugador en posición: X=" + String.format("%.1f", playerPosition.x) + ", Y=" + String.format("%.1f", playerPosition.y));
+        }
     }
 
     /**
@@ -623,27 +629,26 @@ public class GameScreen extends UIScreen {
     }
 
     public void spawnEggmanPlayer() {
-        if (player == null || world == null) {
-            System.out.println("No se puede generar un enemigo: el jugador o el mundo no están inicializados.");
+        if (world == null) {
+            System.out.println("No se puede generar Eggman: el mundo no está inicializado.");
             return;
         }
-        Vector2 playerPosition = player.getBody().getPosition();
-        // Calcula una posición aleatoria cerca del jugador
-        float offsetX = 4f; // Entre -0.5 y -5.5 unidades a la izquierda
-        float offsetY = 7f; // Pequeña variación en Y
 
-            Vector2 spawnPosition = new Vector2(playerPosition.x + offsetX, playerPosition.y - offsetY);
+        // Coordenadas específicas donde aparecerá Eggman
+        float eggmanX = 409f; // Coordenada X específica
+        float eggmanY = 26f;  // Coordenada Y específica
 
-            Integer newEnemyId = getNextEntityId();
-            Entity enemy = entityFactory.create(Entity.Type.EGGMAN, world, spawnPosition, newEnemyId);
+        Vector2 spawnPosition = new Vector2(eggmanX, eggmanY);
 
-            if (enemy != null) {
-                addEntity(enemy);
-                System.out.println("Enemigo ThrowerEnemy con ID " + newEnemyId + " añadido en la posición " + spawnPosition.x + ", " + spawnPosition.y);
-            } else {
-                System.out.println("Error: No se pudo crear el ThrowerEnemy.");
-            }
+        Integer newEnemyId = getNextEntityId();
+        Entity enemy = entityFactory.create(Entity.Type.EGGMAN, world, spawnPosition, newEnemyId);
 
+        if (enemy != null) {
+            addEntity(enemy);
+            System.out.println("Eggman con ID " + newEnemyId + " añadido en la posición específica " + spawnPosition.x + ", " + spawnPosition.y);
+        } else {
+            System.out.println("Error: No se pudo crear Eggman.");
+        }
     }
 
 

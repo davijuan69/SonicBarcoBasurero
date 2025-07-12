@@ -297,7 +297,6 @@ public class Player extends PlayerCommon {
         }
         else if(actor instanceof EndRing ring){
             game.endGame();
-            return;
         }
     }
     
