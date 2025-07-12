@@ -41,6 +41,7 @@ import src.world.entities.Entity;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import src.utils.managers.TiledManager;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import src.screens.components.HealthBar;
 
 
 import java.util.ArrayList;
@@ -86,6 +87,7 @@ public class GameScreen extends UIScreen {
     private Chat chat; // Componente de chat para mensajería entre jugadores.
     private PowerView imagePower; // Indicador visual del poder activo del jugador.
     private GameLayerManager gameLayerManager; // Gestor de capas para menús o ventanas emergentes.
+    // Elimina la declaración de la variable healthBar
 
     //Factories
     public final EntityFactory entityFactory;
@@ -176,8 +178,8 @@ public class GameScreen extends UIScreen {
     public void addMainPlayer(){
         if (player != null) return;
         Vector2 position = new Vector2(spawnPlayer.get(0));
-
         player = new Player(world, position.x, position.y, main.getAssetManager(), this, main.playerColor);
+        player.resetStats();
         stage.addActor(player);
     }
 
@@ -198,6 +200,7 @@ public class GameScreen extends UIScreen {
         stage.clear();
         stageUI.clear();
         actors.clear();
+        entities.clear();
         spawnMirror.clear();
     }
 
@@ -205,13 +208,9 @@ public class GameScreen extends UIScreen {
      * Finaliza la partida y cambia a la pantalla de fin del juego.
      */
     public void endGame() {
-        threadSecureWorld.clearModifications();
-        threadSecureWorld.addModification(() -> {
-            clearAll();
-            //timeGame.resetTimer();
-            main.changeScreen(Main.Screens.MENU);
-            isLoad = false;
-        });
+        isLoad = false;
+        player = null;
+        main.setScreen(new src.screens.uiScreens.MenuScreen(main));
     }
 
     /**
@@ -220,25 +219,15 @@ public class GameScreen extends UIScreen {
      */
     @Override
     public void show() {
+        clearAll(); // Limpia todo antes de iniciar
         Gdx.input.setInputProcessor(stageUI);
         SingleSoundManager.getInstance().setSoundTracks(Main.SoundTrackType.GAME);
 
-        if (player != null) {
-            player.setPaused(false);
-            threadSecureWorld.addModification(() -> {
-                Vector2 position = spawnPlayer.get(0);
-                player.getBody().setTransform(position.x, position.y, 0);
-                player.getBody().setLinearVelocity(0,0);
-                player.setCurrentState(Player.StateType.IDLE);
-            });
-        }else{
-            tiledManager.makeMap();
-            addMainPlayer();
-            //setScore(3);
-            initUI();
-            //gameLayerManager.setVisible(false);
-            isLoad = true;
-        }
+        tiledManager.makeMap();
+        addMainPlayer();
+        initUI();
+        isLoad = true;
+
         spawnBasicEnemyNearPlayer();
         spawnThrowerEnemyNearPlayer();
         spawnTrashNearPlayer();
@@ -251,7 +240,12 @@ public class GameScreen extends UIScreen {
      * Inicializa todos los elementos de la interfaz de usuario.
      */
     private void initUI() {
-        // [...documentación ya presente en el bloque original...]
+        if (player == null) return;
+        Label.LabelStyle healthLabelStyle = new Label.LabelStyle();
+        healthLabelStyle.font = main.fonts.interFont;
+        healthLabelStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE;
+        HealthBar healthBar = new HealthBar(player, healthLabelStyle);
+        stage.addActor(healthBar);
     }
 
     /**
@@ -278,29 +272,27 @@ public class GameScreen extends UIScreen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0.4f, 0.5f, 0.8f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!isLoad) return;
+        if (!isLoad || player == null) return;
 
-        OrthographicCamera camera = (OrthographicCamera) stage.getCamera();
-        OrthographicCamera cameraUI = (OrthographicCamera) stageUI.getCamera();
+        actLogic(delta);
 
-        camera.position.x = MathUtils.lerp(camera.position.x, player.getX() + (player.isFlipX() ? -32 : 32), 0.10f);
-        camera.position.y = MathUtils.lerp(camera.position.y, player.getY(), 0.3f);
+        if (player != null) {
+            OrthographicCamera camera = (OrthographicCamera) stage.getCamera();
+            OrthographicCamera cameraUI = (OrthographicCamera) stageUI.getCamera();
 
-        tiledRenderer.setView(camera);
+            camera.position.x = MathUtils.lerp(camera.position.x, player.getX() + (player.isFlipX() ? -32 : 32), 0.10f);
+            camera.position.y = MathUtils.lerp(camera.position.y, player.getY(), 0.3f);
 
-        tiledRenderer.render();
+            tiledRenderer.setView(camera);
+            tiledRenderer.render();
 
-        cameraUI.position.x = camera.position.x;
-        cameraUI.position.y = camera.position.y;
+            cameraUI.position.x = camera.position.x;
+            cameraUI.position.y = camera.position.y;
 
-        //cameraUI.position.set(camera.position);
-
-        cameraShakeManager.update(delta);
-        camera.update();
-        cameraUI.update();
-
-        //layersManager.setCenterPosition(camera.position.x, camera.position.y);
-        //gameLayerManager.setCenterPosition(cameraUI.position.x, cameraUI.position.y);
+            cameraShakeManager.update(delta);
+            camera.update();
+            cameraUI.update();
+        }
 
         actUI();
         stage.draw();
@@ -309,8 +301,6 @@ public class GameScreen extends UIScreen {
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             gameLayerManager.setVisibleWithSound(!gameLayerManager.isVisible());
         }
-
-        actLogic(delta);
     }
 
     /**
@@ -324,10 +314,9 @@ public class GameScreen extends UIScreen {
             OrthographicCamera camera = (OrthographicCamera) stage.getCamera();
             camera.zoom = cameraZoom;
             stage.getViewport().update(width, height, false);
-            stageUI.getViewport().update(width, height, false);
-
+            stageUI.getViewport().update(width, height, true);
+            stageUI.getViewport().setWorldSize(width, height); // Fuerza el mundo UI a tamaño de pantalla
             if (player == null) return;
-
             camera.position.x = player.getX() + (player.isFlipX() ? -32 : 32);
             camera.position.y = player.getY();
         });
@@ -665,11 +654,6 @@ public class GameScreen extends UIScreen {
     private int getNextEntityId() {
         return nextEntityId++;
     }
-
-
-
-
-
 
 
 }

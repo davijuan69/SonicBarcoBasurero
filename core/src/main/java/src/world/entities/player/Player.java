@@ -33,6 +33,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Player extends PlayerCommon {
+    // Sistema de salud
+    private int maxHealth = 3;
+    private int currentHealth = 3;
+    private int coinCount = 0;
+    public static final int COINS_FOR_EXTRA_LIFE = 10;
+    
     // Cantidad de monedas que suelta al recibir daño
     public Integer coinDrop = 3;
     public static final Integer DEFAULT_COIN_DROP = 3;
@@ -268,11 +274,21 @@ public class Player extends PlayerCommon {
 
             if (getCurrentStateType() == StateType.STUN || invencible || enemy.getCurrentStateType() == Enemy.StateType.DAMAGE)
                 return;
+            
+            // Aplicar daño al jugador
+            boolean playerDied = takeDamage(1);
+            
+            if (playerDied) {
+                // El jugador murió, manejar la lógica de muerte
+                return;
+            }
+            
             setCurrentState(Player.StateType.STUN);
             Box2dUtils.knockbackBody(body, enemy.getBody(), 10f);
             setCurrentState(StateType.FALL);
 
         } else if (actor instanceof Rings coin) {
+            addCoin();
             coin.despawn();
         }
         else if(actor instanceof Mount mount){
@@ -281,7 +297,104 @@ public class Player extends PlayerCommon {
         }
         else if(actor instanceof EndRing ring){
             game.endGame();
+            return;
         }
+    }
+    
+    // ===== MÉTODOS DEL SISTEMA DE SALUD =====
+    
+    /**
+     * Obtiene la vida máxima del jugador.
+     */
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+    
+    /**
+     * Obtiene la vida actual del jugador.
+     */
+    public int getCurrentHealth() {
+        return currentHealth;
+    }
+    
+    /**
+     * Obtiene el porcentaje de vida actual (0.0 a 1.0).
+     */
+    public float getHealthPercentage() {
+        return (float) currentHealth / maxHealth;
+    }
+    
+    /**
+     * Obtiene el número de monedas recolectadas.
+     */
+    public int getCoinCount() {
+        return coinCount;
+    }
+    
+    /**
+     * Obtiene el progreso hacia la siguiente vida extra (0.0 a 1.0).
+     */
+    public float getExtraLifeProgress() {
+        return (float) coinCount / COINS_FOR_EXTRA_LIFE;
+    }
+    
+    /**
+     * Añade monedas al jugador. Si alcanza 10 monedas, gana una vida extra.
+     */
+    public void addCoins(int amount) {
+        coinCount += amount;
+        if (coinCount >= COINS_FOR_EXTRA_LIFE) {
+            addHealth(1);
+            coinCount = 0; // Resetear contador de monedas
+        }
+    }
+    
+    /**
+     * Añade vida al jugador.
+     */
+    public void addHealth(int amount) {
+        currentHealth = Math.min(currentHealth + amount, maxHealth);
+    }
+    
+    /**
+     * Reduce la vida del jugador por daño.
+     * @return true si el jugador murió, false si sobrevivió
+     */
+    public boolean takeDamage(int damage) {
+        if (invencible) return false; // No recibir daño si es invencible
+        
+        currentHealth = Math.max(currentHealth - damage, 0);
+        if (currentHealth <= 0) {
+            // El jugador ha muerto
+            die();
+            return true;
+        } else {
+            // Hacer invencible por un tiempo después del daño
+            setInvencible(2.0f);
+            return false;
+        }
+    }
+    
+    /**
+     * Maneja la muerte del jugador.
+     */
+    private void die() {
+        System.out.println("¡El jugador ha muerto!");
+        game.main.setScreen(new src.screens.uiScreens.MenuScreen(game.main));
+    }
+
+    // Llama a este método cuando el jugador recolecta una moneda
+    public void addCoin() {
+        coinCount++;
+        if (coinCount >= COINS_FOR_EXTRA_LIFE) {
+            coinCount = 0;
+            if (currentHealth < maxHealth) currentHealth++;
+        }
+    }
+
+    public void resetStats() {
+        currentHealth = maxHealth;
+        coinCount = 0;
     }
 }
 

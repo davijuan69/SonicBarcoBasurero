@@ -35,6 +35,16 @@ public class Projectil extends Entity {
             despawn();
         } else if (actor instanceof Player player) {
             if (player.getCurrentStateType() == PlayerCommon.StateType.STUN || player.isInvencible()) {despawn(); return;}
+            
+            // Aplicar daño al jugador usando el nuevo sistema de vida
+            Boolean playerDied = player.takeDamage(damage);
+            if (playerDied) {
+                // El jugador murió, terminar el juego
+                game.endGame();
+                despawn();
+                return;
+            }
+            
             player.coinDrop = damage;
             player.setCurrentState(Player.StateType.STUN);
             Box2dUtils.knockbackBody(getBody(), body, damage);

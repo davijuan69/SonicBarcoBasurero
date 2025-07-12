@@ -57,6 +57,8 @@ public class EntityFactory {
 
             case ENDRING -> new EndRing(world, new Rectangle(position.x, position.y, 3f, 3f), assetManager, id, game);
 
+
+
             default -> null;
         };
     }
