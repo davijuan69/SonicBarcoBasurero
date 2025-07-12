@@ -209,7 +209,7 @@ public class GameScreen extends UIScreen {
         threadSecureWorld.addModification(() -> {
             clearAll();
             //timeGame.resetTimer();
-            //main.changeScreen(Main.Screens.ENDGAME);
+            main.changeScreen(Main.Screens.MENU);
             isLoad = false;
         });
     }
@@ -640,13 +640,13 @@ public class GameScreen extends UIScreen {
         }
         Vector2 playerPosition = player.getBody().getPosition();
         // Calcula una posición aleatoria cerca del jugador
-        float offsetX = 500f; // Entre -0.5 y -5.5 unidades a la izquierda
-        float offsetY = 10f; // Pequeña variación en Y
+        float offsetX = 4f; // Entre -0.5 y -5.5 unidades a la izquierda
+        float offsetY = 7f; // Pequeña variación en Y
 
             Vector2 spawnPosition = new Vector2(playerPosition.x + offsetX, playerPosition.y - offsetY);
 
             Integer newEnemyId = getNextEntityId();
-            Entity enemy = entityFactory.create(Entity.Type.THROWER, world, spawnPosition, newEnemyId);
+            Entity enemy = entityFactory.create(Entity.Type.EGGMAN, world, spawnPosition, newEnemyId);
 
             if (enemy != null) {
                 addEntity(enemy);
