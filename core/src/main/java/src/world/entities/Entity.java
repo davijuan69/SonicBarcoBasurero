@@ -14,6 +14,7 @@ public class Entity extends ActorBox2dSprite{
         MOUNT,
         RING, // moneda del juego
         EGGMAN,
+        ENDRING,
         CHECKPOINT,
 
     }

@@ -24,6 +24,7 @@ import src.world.ActorBox2d;
 import src.world.entities.Entity;
 import src.world.entities.enemies.Enemy;
 import src.world.entities.enemies.Eggman.Eggman;
+import src.world.entities.items.EndRing;
 import src.world.entities.items.Item;
 import src.world.entities.items.Mount;
 import src.world.entities.items.Rings;
@@ -277,6 +278,9 @@ public class Player extends PlayerCommon {
         else if(actor instanceof Mount mount){
             mount.throwEntity(Type.RING, 0f,4f);
             mount.despawn();
+        }
+        else if(actor instanceof EndRing ring){
+            game.endGame();
         }
     }
 }

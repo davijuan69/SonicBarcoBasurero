@@ -31,7 +31,7 @@ public class DamageStateEggman extends StateEnemy<Eggman> {
         if (enemy.isAnimationFinish()) {
             enemy.setState(Eggman.StateType.WALK);
             if (enemy.isDead()){
-                enemy.throwEntity(Entity.Type.RING,0f,3f);
+                enemy.throwEntity(Entity.Type.ENDRING,3f,0f);
                 enemy.game.removeEntity(enemy.getId());
             }
         }

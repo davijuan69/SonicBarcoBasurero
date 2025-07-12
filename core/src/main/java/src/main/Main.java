@@ -110,6 +110,7 @@ public class Main extends Game {
         assetManager.load("yoshi.jpg", Texture.class);
         assetManager.load("world/entities/Objetos/monton.png", Texture.class);
         assetManager.load("world/entities/Objetos/anillos.png", Texture.class);
+        assetManager.load("world/entities/Objetos/anillo_especial.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_Inactivo.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr1.png", Texture.class);
         assetManager.load("world/entities/Sonic/Sonic_correr2.png", Texture.class);

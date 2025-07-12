@@ -19,7 +19,7 @@ public class AttackStateEggman extends StateEnemy<Eggman> {
         enemy.setAnimation(Eggman.AnimationType.ATTACK);
         enemy.throwEntity(Entity.Type.TRASH, 4f,3f);
         enemy.throwEntity(Entity.Type.TRASH, -4f,3f);
-        enemy.throwEntity(Entity.Type.TRASH, 4f,0f);
+        enemy.throwEntity(Entity.Type.TRASH, 0f,0f);
     }
 
     @Override

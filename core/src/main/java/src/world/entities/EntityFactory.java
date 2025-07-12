@@ -9,6 +9,7 @@ import src.screens.game.GameScreen;
 import src.world.entities.enemies.Eggman.Eggman;
 import src.world.entities.enemies.Throw.ThrowEnemy;
 import src.world.entities.enemies.basic.BasicEnemy;
+import src.world.entities.items.EndRing;
 import src.world.entities.items.Mount;
 import src.world.entities.items.Rings;
 import src.world.entities.proyectiles.TrashProyectil;
@@ -48,11 +49,13 @@ public class EntityFactory {
 
             case TRASH -> new TrashProyectil(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
 
-            case MOUNT -> new Mount(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
+            case MOUNT -> new Mount(world, new Rectangle(position.x, position.y, 2f, 2f), assetManager, id, game);
 
-            case RING -> new Rings(world, new Rectangle(position.x, position.y, 1f, 1f), assetManager, id, game);
+            case RING -> new Rings(world, new Rectangle(position.x, position.y, 2f, 2f), assetManager, id, game);
 
-            case EGGMAN -> new Eggman(world, new Rectangle(position.x, position.y, 3f, 3f), assetManager, id, game);
+            case EGGMAN -> new Eggman(world, new Rectangle(position.x, position.y, 4f, 4f), assetManager, id, game);
+
+            case ENDRING -> new EndRing(world, new Rectangle(position.x, position.y, 3f, 3f), assetManager, id, game);
 
             default -> null;
         };

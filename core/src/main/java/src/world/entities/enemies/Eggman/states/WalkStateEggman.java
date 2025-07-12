@@ -20,7 +20,7 @@ public class WalkStateEggman extends StateEnemy<Eggman> {
 
     @Override
     public void update(Float delta) {
-        enemy.getBody().applyForce(0, enemy.eggmanDown ? -5f : 5f,
+        enemy.getBody().applyForce(0, enemy.eggmanDown ? -7f : 7f,
             enemy.getBody().getWorldCenter().x, enemy.getBody().getWorldCenter().y, true);
 
         Vector2 velocity = enemy.getBody().getLinearVelocity();
