@@ -41,16 +41,9 @@ public class TiledManager {
      * @return Un `OrthogonalTiledMapRenderer` configurado para dibujar el mapa.
      */
     public OrthogonalTiledMapRenderer setupMap(String map) {
-        System.out.println("[DEBUG] Cargando mapa: " + map);
         tiledmap = new TmxMapLoader().load(map); // Carga el archivo .tmx en un objeto TiledMap.
         // Obtiene el tamaño del tile (ancho/alto) de las propiedades del mapa.
         tiledSize = tiledmap.getProperties().get("tilewidth", Integer.class);
-        System.out.println("[DEBUG] Tamaño de tile: " + tiledSize);
-
-        System.out.println("[DEBUG] Tilesets encontrados:");
-        for (com.badlogic.gdx.maps.tiled.TiledMapTileSet tileset : tiledmap.getTileSets()) {
-            System.out.println("[DEBUG] - Tileset: " + tileset.getName() + " con " + tileset.size() + " tiles");
-        }
 
         // Fuerza el filtro de textura a Nearest para todos los tilesets
         for (com.badlogic.gdx.maps.tiled.TiledMapTileSet tileset : tiledmap.getTileSets()) {
@@ -61,11 +54,6 @@ public class TiledManager {
                     texture.setFilter(com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest, com.badlogic.gdx.graphics.Texture.TextureFilter.Nearest);
                 }
             }
-        }
-
-        System.out.println("[DEBUG] Capas encontradas:");
-        for (com.badlogic.gdx.maps.MapLayer layer : tiledmap.getLayers()) {
-            System.out.println("[DEBUG] - Capa: " + layer.getName() + " (tipo: " + layer.getClass().getSimpleName() + ")");
         }
 
         // Retorna un renderizador que escala el mapa sin escalado (1f)

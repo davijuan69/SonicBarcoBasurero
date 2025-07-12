@@ -23,6 +23,13 @@ public abstract class PlayerCommon extends Entity {
     public float brakeForce = DEFAULT_BRAKE_FORCE;
     public int dashDamage = DEFAULT_DASH_DAMAGE;
 
+    // Variables para evitar que se pegue en curvas
+    public float wallUnstickForce = 15f;
+    public float wallDetectionDistance = 0.5f;
+    public boolean isStuckOnWall = false;
+    public float wallStuckTimer = 0f;
+    public static final float WALL_STUCK_THRESHOLD = 0.5f; // Tiempo máximo que puede estar "pegado"
+
     public static final int DEFAULT_DASH_DAMAGE = 1;
     public static final float DEFAULT_STUNT_TIME = 1f;
     public static final float WALK_SPEED = 14f;
