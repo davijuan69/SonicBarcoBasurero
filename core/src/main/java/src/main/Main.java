@@ -96,7 +96,7 @@ public class Main extends Game {
         assetManager.load("ui/bg/image3.jpg", Texture.class);
         assetManager.load("ui/bg/image2.jpg", Texture.class);
         assetManager.load("ui/bg/images.jpg", Texture.class);
-        assetManager.load("ui/bg/img.png", Texture.class); // Fondo del menú
+        assetManager.load("ui/bg/sonicFondo.jpg", Texture.class); // Fondo del menú
         assetManager.load("logo.png", Texture.class);         // Logo del juego
         assetManager.load("ui/buttons/info.png", Texture.class);
         assetManager.load("ui/buttons/infoHover.png", Texture.class);

@@ -29,7 +29,7 @@ public class MenuScreen extends UIScreen {
         super(main); // Llama al constructor de la clase padre (UIScreen) para inicializar el Stage y estilos básicos.
 
         // --- Carga y configura la imagen de fondo ---
-        Image bgImage = new Image(main.getAssetManager().get("ui/bg/img.png", Texture.class));
+        Image bgImage = new Image(main.getAssetManager().get("ui/bg/sonicFondo.jpg", Texture.class));
         bgImage.setScaling(com.badlogic.gdx.utils.Scaling.stretch); // Hace que el fondo se estire
         bgImage.setFillParent(true); // Hace que ocupe todo el Stage
         stageUI.addActor(bgImage); // Agrega el fondo directamente al Stage antes que cualquier otro actor
