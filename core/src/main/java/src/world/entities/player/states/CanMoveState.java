@@ -15,12 +15,13 @@ public abstract class CanMoveState extends StatePlayer{
     public void update(Float delta) {
         Body body = player.getBody();
         Vector2 velocity = body.getLinearVelocity();
+        boolean runPressed = PlayerControl.isRunPressed();
 
-        if (Gdx.input.isKeyPressed(PlayerControl.RIGHT) && velocity.x <  player.maxSpeed){
+        if (Gdx.input.isKeyPressed(PlayerControl.RIGHT) && (runPressed || velocity.x <  player.maxSpeed)){
             body.applyForce( player.speed, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
             if (player.isFlipX()) player.setFlipX(false);
         }
-        if (Gdx.input.isKeyPressed(PlayerControl.LEFT) && velocity.x > - player.maxSpeed){
+        if (Gdx.input.isKeyPressed(PlayerControl.LEFT) && (runPressed || velocity.x > - player.maxSpeed)){
             body.applyForce(- player.speed, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
             if (!player.isFlipX()) player.setFlipX(true);
         }

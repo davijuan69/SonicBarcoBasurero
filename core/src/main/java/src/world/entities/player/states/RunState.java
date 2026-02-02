@@ -35,6 +35,12 @@ public class RunState extends CanBasicMoveState{
     @Override
     public void update(Float delta) {
         super.update(delta);
+        if (player.getCurrentStateType() != Player.StateType.RUN) return;
+
+        if (!PlayerControl.isRunPressed()) {
+            player.setCurrentState(Player.StateType.WALK);
+            return;
+        }
 
         Vector2 velocity = player.getBody().getLinearVelocity();
         if (velocity.x == 0 && !Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT)){

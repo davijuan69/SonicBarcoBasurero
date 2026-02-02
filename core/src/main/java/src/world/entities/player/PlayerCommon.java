@@ -1,5 +1,6 @@
 package src.world.entities.player;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.*;
 import src.utils.animation.SheetCutter;
+import src.utils.constants.PlayerControl;
 import src.utils.stateMachine.StateMachine;
 import src.utils.stateMachine.StateMachine;
 import src.world.entities.Entity;
@@ -32,17 +34,20 @@ public abstract class PlayerCommon extends Entity {
 
     public static final int DEFAULT_DASH_DAMAGE = 1;
     public static final float DEFAULT_STUNT_TIME = 1f;
-    public static final float WALK_SPEED = 14f;
-    public static final float WALK_MAX_SPEED = 5f;
-    public static final float RUN_SPEED = 18f;
-    public static final float RUN_MAX_SPEED = 6.5f;
+    public static final float WALK_SPEED = 16f;
+    public static final float WALK_MAX_SPEED = 5.6f;
+    public static final float TROT_SPEED = 19f;
+    public static final float TROT_MAX_SPEED = 6.6f;
+    public static final float TROT_THRESHOLD = 4.8f;
+    public static final float RUN_SPEED = 24f;
+    public static final float RUN_MAX_SPEED = 8.2f;
     public static final float MAX_JUMP_TIME = 0.3f;
-    public static final float JUMP_IMPULSE = 8f;
-    public static final float JUMP_INAIR = 25f; // Se multiplica por deltaTime
+    public static final float JUMP_IMPULSE = 9f;
+    public static final float JUMP_INAIR = 28f; // Se multiplica por deltaTime
     public static final float FLY_IMPULSE = 6f;
     public static final float DASH_IMPULSE = 15f;
     public static final float ABSORB_FORCE = 12f;
-    public static final float DEFAULT_BRAKE_FORCE = 280f;
+    public static final float DEFAULT_BRAKE_FORCE = 220f;
 
     public AssetManager assetManager;
 
@@ -121,6 +126,7 @@ public abstract class PlayerCommon extends Entity {
         def.position.set(x + bodyWidth / 2, y + bodyHeight/ 2);
         def.type = BodyDef.BodyType.DynamicBody;
         body = world.createBody(def);
+        body.setLinearDamping(1.6f);
 
         CircleShape box = new CircleShape();
         box.setRadius(bodyWidth/6);
@@ -161,11 +167,9 @@ public abstract class PlayerCommon extends Entity {
 
         fallAnimation = new Animation<>(0.1f,
             SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_cayendo.png"), 2));
-        fallAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+        fallAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
-//        fallSimpleAnimation = new Animation<>(0.04f,
-//            SheetCutter.cutHorizontal(assetManager.get(""), 20));
-//
+    fallSimpleAnimation = fallAnimation;
         runAnimation = new Animation<>(0.04f,
             SheetCutter.cutHorizontal(assetManager.get("world/entities/Sonic/Sonic_correr2.png"), 4));
         runAnimation.setPlayMode(Animation.PlayMode.LOOP);
@@ -285,9 +289,10 @@ public abstract class PlayerCommon extends Entity {
         float vx = body.getLinearVelocity().x;
         float absVx = Math.abs(vx);
         boolean movingRight = vx > 0;
-        // Transición de caminar a correr
+        // Transición de caminar a correr (solo con SHIFT)
         if (getCurrentStateType() == StateType.WALK || getCurrentStateType() == StateType.RUN) {
-            if (absVx > MAX_THRESHOLD) {
+            boolean runKey = PlayerControl.isRunPressed();
+            if (runKey && absVx > MAX_THRESHOLD) {
                 runToMaxTimer += delta;
                 walkToRunTimer = 0f;
                 if (runToMaxTimer > TRANSITION_TIME) {
@@ -299,7 +304,7 @@ public abstract class PlayerCommon extends Entity {
                         }
                     }
                 }
-            } else if (absVx > RUN_THRESHOLD) {
+            } else if (runKey && absVx > RUN_THRESHOLD) {
                 walkToRunTimer += delta;
                 runToMaxTimer = 0f;
                 hasBoostedMax = false;
@@ -312,12 +317,24 @@ public abstract class PlayerCommon extends Entity {
                         }
                     }
                 }
+            } else if (runKey) {
+                walkToRunTimer = 0f;
+                runToMaxTimer = 0f;
+                hasBoostedRun = false;
+                hasBoostedMax = false;
+                if (getCurrentAnimationType() != AnimationType.RUN) {
+                    setAnimation(AnimationType.RUN);
+                }
             } else {
                 walkToRunTimer = 0f;
                 runToMaxTimer = 0f;
                 hasBoostedRun = false;
                 hasBoostedMax = false;
-                if (getCurrentAnimationType() != AnimationType.WALK) {
+                if (absVx > TROT_THRESHOLD) {
+                    if (getCurrentAnimationType() != AnimationType.RUN) {
+                        setAnimation(AnimationType.RUN);
+                    }
+                } else if (getCurrentAnimationType() != AnimationType.WALK) {
                     setAnimation(AnimationType.WALK);
                 }
             }

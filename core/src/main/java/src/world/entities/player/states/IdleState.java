@@ -20,6 +20,10 @@ public class IdleState extends CanBasicMoveState{
         super.update(delta);
 
         Vector2 velocity = player.getBody().getLinearVelocity();
+        if (PlayerControl.isRunPressed() && (Gdx.input.isKeyPressed(PlayerControl.RIGHT) || Gdx.input.isKeyPressed(PlayerControl.LEFT))) {
+            player.setCurrentState(Player.StateType.RUN);
+            return;
+        }
         if (Math.abs(velocity.x) > 0.1f &&
             (Gdx.input.isKeyPressed(PlayerControl.RIGHT) || Gdx.input.isKeyPressed(PlayerControl.LEFT))) player.setCurrentState(Player.StateType.WALK);
     }

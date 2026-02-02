@@ -244,9 +244,10 @@ public class Player extends PlayerCommon {
 
         Vector2 velocity = body.getLinearVelocity();
         if (getCurrentStateType() == StateType.DASH || getCurrentStateType() == StateType.STUN) return;
+        if (getCurrentStateType() == StateType.RUN || PlayerControl.isRunPressed()) return;
         if (!Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT)) {
-            // No frenar si está en animación MAXSPEED o si la velocidad es mayor a 5.5f
-            if (getCurrentAnimationType() != AnimationType.MAXSPEED && Math.abs(velocity.x) < 5.5f) {
+            // No frenar si está en animación MAXSPEED o si la velocidad es mayor a 9.0f
+            if (getCurrentAnimationType() != AnimationType.MAXSPEED && Math.abs(velocity.x) < 9.0f) {
                 body.applyForce(-velocity.x * brakeForce * delta, 0, body.getWorldCenter().x, body.getWorldCenter().y, true);
             }
         }

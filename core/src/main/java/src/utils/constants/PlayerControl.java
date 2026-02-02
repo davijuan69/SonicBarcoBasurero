@@ -1,5 +1,6 @@
 package src.utils.constants;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
 /**
@@ -36,6 +37,10 @@ public class PlayerControl {
      */
     public static int RUN = Input.Keys.SHIFT_LEFT;
     /**
+     * Tecla alternativa para **correr** (Shift derecho).
+     */
+    public static int RUN_RIGHT = Input.Keys.SHIFT_RIGHT;
+    /**
      * Tecla asignada para una acción genérica de **interacción** o activación.
      * Por defecto, se establece en la tecla 'P'.
      */
@@ -45,4 +50,11 @@ public class PlayerControl {
      * Por defecto, se establece en la tecla 'CONTROL_LEFT' (Control izquierdo).
      */
     public static int DROP = Input.Keys.CONTROL_LEFT;
+
+    /**
+     * Indica si alguna tecla de correr está presionada.
+     */
+    public static boolean isRunPressed() {
+        return Gdx.input.isKeyPressed(RUN) || Gdx.input.isKeyPressed(RUN_RIGHT);
+    }
 }

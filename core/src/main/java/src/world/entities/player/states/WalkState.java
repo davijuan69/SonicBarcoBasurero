@@ -16,16 +16,32 @@ public class WalkState extends CanBasicMoveState{
 
         player.speed = Player.WALK_SPEED;
         player.maxSpeed =  Player.WALK_MAX_SPEED;
-        if (Math.abs(player.getBody().getLinearVelocity().x) > player.maxSpeed) player.setCurrentState(Player.StateType.RUN);
     }
 
     @Override
     public void update(Float delta) {
         super.update(delta);
+        if (player.getCurrentStateType() != Player.StateType.WALK) return;
         Vector2 velocity = player.getBody().getLinearVelocity();
-        // Cambia a RUN automáticamente si la velocidad supera el umbral de caminar
-        if (Math.abs(velocity.x) > Player.WALK_MAX_SPEED + 0.1f) {
+        // Shift para correr; si no, caminar y luego trotar
+        if (PlayerControl.isRunPressed()) {
             player.setCurrentState(Player.StateType.RUN);
+            return;
+        }
+
+        float absVx = Math.abs(velocity.x);
+        if (absVx > Player.TROT_THRESHOLD) {
+            player.speed = Player.TROT_SPEED;
+            player.maxSpeed = Player.TROT_MAX_SPEED;
+            if (player.getCurrentAnimationType() != Player.AnimationType.RUN) {
+                player.setAnimation(Player.AnimationType.RUN);
+            }
+        } else {
+            player.speed = Player.WALK_SPEED;
+            player.maxSpeed = Player.WALK_MAX_SPEED;
+            if (player.getCurrentAnimationType() != Player.AnimationType.WALK) {
+                player.setAnimation(Player.AnimationType.WALK);
+            }
         }
         if (velocity.x == 0 || (!Gdx.input.isKeyPressed(PlayerControl.LEFT) && !Gdx.input.isKeyPressed(PlayerControl.RIGHT))){
             player.setCurrentState(Player.StateType.IDLE);
