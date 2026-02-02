@@ -245,7 +245,7 @@ public class GameScreen extends UIScreen {
         healthLabelStyle.font = main.fonts.interFont;
         healthLabelStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE;
         HealthBar healthBar = new HealthBar(player, healthLabelStyle);
-        stage.addActor(healthBar);
+        stageUI.addActor(healthBar);
     }
 
     /**
@@ -292,8 +292,7 @@ public class GameScreen extends UIScreen {
             tiledRenderer.setView(camera);
             tiledRenderer.render();
 
-            cameraUI.position.x = camera.position.x;
-            cameraUI.position.y = camera.position.y;
+            // keep UI camera independent from world camera to avoid HUD jitter
 
             cameraShakeManager.update(delta);
             camera.update();
@@ -302,6 +301,7 @@ public class GameScreen extends UIScreen {
 
         actUI();
         stage.draw();
+        stageUI.act(delta);
         stageUI.draw();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
