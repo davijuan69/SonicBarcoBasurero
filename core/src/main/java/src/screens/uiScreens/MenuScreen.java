@@ -34,6 +34,11 @@ public class MenuScreen extends UIScreen {
         bgImage.setFillParent(true); // Hace que ocupe todo el Stage
         stageUI.addActor(bgImage); // Agrega el fondo directamente al Stage antes que cualquier otro actor
 
+        Image icono = new Image(main.getAssetManager().get("ui/bg/incono.png", Texture.class));
+        icono.setSize(400, 280);
+        icono.setPosition(20, Gdx.graphics.getHeight() - 20 - icono.getHeight());
+        stageUI.addActor(icono);
+
         // --- Configuración de los botones principales (Jugar, Configuración, Salir) ---
         // Asumiendo que myImageTextbuttonStyle ya está bien definido en UIScreen
         TextureRegionDrawable drawableUp = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/info.png", Texture.class));

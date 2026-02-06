@@ -9,8 +9,15 @@ import java.util.ArrayList;
  * La clase `LayersManager` proporciona una forma de gestionar múltiples capas (`Table`s)
  * dentro de un `Stage` de LibGDX. Cada capa es esencialmente una `Table` que cubre toda la pantalla.
  * Permite organizar actores en diferentes "planos" (zIndex) y controlar su visibilidad o posición de forma conjunta.
+ * LayersManager layersManager = new LayersManager(stageUI, 3);
+
+layersManager.setZindex(2);
+layersManager.getLayer().setFillParent(true);
+layersManager.getLayer().top().left().pad(20);
+layersManager.getLayer().add(icono).width(80).height(80);
  */
 public class LayersManager {
+    
     private final ArrayList<Table> layers; // Una lista para almacenar todas las capas (`Table`s). Es `final` porque la lista en sí no cambiará.
     private Integer zIndex; // Un índice para referirse a la capa actualmente "seleccionada" o en foco.
 
