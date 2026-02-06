@@ -36,7 +36,10 @@ public class MenuScreen extends UIScreen {
 
         Image icono = new Image(main.getAssetManager().get("ui/bg/incono.png", Texture.class));
         icono.setSize(400, 280);
-        icono.setPosition(20, Gdx.graphics.getHeight() - 20 - icono.getHeight());
+        float iconPaddingLeft = 20f;
+        float iconPaddingTop = 12f;
+        float iconButtonsGap = 8f;
+        icono.setPosition(iconPaddingLeft, Gdx.graphics.getHeight() - iconPaddingTop - icono.getHeight());
         stageUI.addActor(icono);
 
         // --- Configuración de los botones principales (Jugar, Configuración, Salir) ---
@@ -99,10 +102,14 @@ public class MenuScreen extends UIScreen {
         // Capa 0: Los botones (Jugar, Configuración, Salir)
         layersManager.setZindex(0);
         layersManager.getLayer().setFillParent(true);
-        layersManager.getLayer().bottom().padBottom(50); // Botones pegados abajo con un pequeño margen
-        layersManager.getLayer().add(playButton).width(300).height(80).pad(10).row();
-        layersManager.getLayer().add(optionButton).width(300).height(80).pad(10).row();
-        layersManager.getLayer().add(exitButton).width(300).height(80).pad(10).row();
+        layersManager.getLayer()
+            .top()
+            .left()
+            .padTop(iconPaddingTop + icono.getHeight() + iconButtonsGap)
+            .padLeft(iconPaddingLeft);
+        layersManager.getLayer().add(playButton).width(400).height(260).pad(-1000).row();
+        layersManager.getLayer().add(optionButton).width(400).height(260).pad(0).row();
+        layersManager.getLayer().add(exitButton).width(400).height(260).pad(0).row();
 
         // Los tamaños de los botones se ajustan a un porcentaje del ancho/alto de la pantalla para ser responsivos
 

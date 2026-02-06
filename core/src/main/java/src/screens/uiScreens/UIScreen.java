@@ -44,8 +44,8 @@ public abstract class UIScreen extends BaseScreen {
         stageUI = new Stage(new ScreenViewport()); // Crea un nuevo Stage con un ScreenViewport para una gestión de pantalla adaptable.
 
         // Carga las texturas para los estados normal y de hover de los botones.
-        TextureRegionDrawable drawableUp = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/button.png", Texture.class));
-        TextureRegionDrawable drawableHover = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/buttonHover.png", Texture.class));
+        TextureRegionDrawable drawableUp = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/boton.png", Texture.class));
+        TextureRegionDrawable drawableHover = new TextureRegionDrawable(main.getAssetManager().get("ui/buttons/botonHover.png", Texture.class));
 
         // Configura el estilo del botón de imagen con texto (ImageTextButton).
         myImageTextbuttonStyle = new ImageTextButton.ImageTextButtonStyle();

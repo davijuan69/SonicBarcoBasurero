@@ -103,8 +103,8 @@ public class Main extends Game {
         assetManager.load("ui/buttons/infoHover.png", Texture.class);
         assetManager.load("ui/buttons/exit.png", Texture.class);
         assetManager.load("ui/buttons/exitHover.png", Texture.class);
-        assetManager.load("ui/buttons/button.png", Texture.class);
-        assetManager.load("ui/buttons/buttonHover.png", Texture.class);
+        assetManager.load("ui/buttons/boton.png", Texture.class);
+        assetManager.load("ui/buttons/botonHover.png", Texture.class);
         assetManager.load("ui/buttons/input.png", Texture.class);
         assetManager.load("ui/bg/img.png", Texture.class);
         assetManager.load("ui/uiskin.json", Skin.class);
